@@ -1,0 +1,466 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Units of Measure -->
+        <record id="uom_ml" model="uom.uom">
+            <field name="name">ml</field>
+            <field name="category_id" ref="uom.product_uom_categ_vol"/>
+            <field name="uom_type">smaller</field>
+            <field name="factor">1000</field>
+            <field name="rounding">0.01</field>
+        </record>
+        <record id="uom_gram" model="uom.uom">
+            <field name="name">gr</field>
+            <field name="category_id" ref="uom.product_uom_categ_kgm"/>
+            <field name="uom_type">smaller</field>
+            <field name="factor">1000</field>
+            <field name="rounding">0.01</field>
+        </record>
+
+        <!-- POS Categories -->
+        <record id="pos_category_basic_coffee" model="pos.category"><field name="name">BASIC COFFEE</field></record>
+        <record id="pos_category_iced_coffee" model="pos.category"><field name="name">ICED COFFEE</field></record>
+        <record id="pos_category_signature" model="pos.category"><field name="name">SIGNATURE</field></record>
+        <record id="pos_category_milk_base" model="pos.category"><field name="name">MILK BASE</field></record>
+        <record id="pos_category_mocktail" model="pos.category"><field name="name">MOCKTAIL</field></record>
+        <record id="pos_category_tea_base" model="pos.category"><field name="name">TEA BASE</field></record>
+        <record id="pos_category_other" model="pos.category"><field name="name">OTHER</field></record>
+        <record id="pos_category_bubur" model="pos.category"><field name="name">BUBUR KETAN HITAM</field></record>
+        <record id="pos_category_main_course" model="pos.category"><field name="name">MAIN COURSE</field></record>
+        <record id="pos_category_side_dish" model="pos.category"><field name="name">SIDE DISH</field></record>
+
+        <!-- POS Payment Methods -->
+        <record id="pm_cash" model="pos.payment.method">
+            <field name="name">Cash</field>
+            <field name="is_cash_count" eval="True"/>
+        </record>
+        <record id="pm_qris" model="pos.payment.method">
+            <field name="name">QRIS</field>
+        </record>
+        <record id="pm_bank" model="pos.payment.method">
+            <field name="name">Bank</field>
+        </record>
+
+        <!-- POS Config (Shop) -->
+
+        <record id="shop_lahat" model="pos.config">
+            <field name="name">Purecf Lahat</field>
+            <field name="payment_method_ids" eval="[(4, ref('pm_cash')), (4, ref('pm_qris')), (4, ref('pm_bank'))]"/>
+        </record>
+
+        <!-- Ingredients -->
+        <!-- Cups -->
+        <record id="ing_cup_hot" model="product.template"><field name="name">Cup Hot</field><field name="type">product</field><field name="uom_id" ref="uom.product_uom_unit"/><field name="x_is_ingredient">True</field><field name="sale_ok" eval="False"/></record>
+        <record id="ing_cup_ice" model="product.template"><field name="name">Cup Ice</field><field name="type">product</field><field name="uom_id" ref="uom.product_uom_unit"/><field name="x_is_ingredient">True</field><field name="sale_ok" eval="False"/></record>
+
+        <!-- Liquids/Bases -->
+        <record id="ing_espresso" model="product.template"><field name="name">Espresso Shot</field><field name="type">product</field><field name="uom_id" ref="uom_ml"/><field name="x_is_ingredient">True</field><field name="sale_ok" eval="False"/></record>
+        <record id="ing_puremilk" model="product.template"><field name="name">Pure Milk</field><field name="type">product</field><field name="uom_id" ref="uom_ml"/><field name="x_is_ingredient">True</field><field name="sale_ok" eval="False"/></record>
+        <record id="ing_uht" model="product.template"><field name="name">Susu UHT</field><field name="type">product</field><field name="uom_id" ref="uom_ml"/><field name="x_is_ingredient">True</field><field name="sale_ok" eval="False"/></record>
+        <record id="ing_skm" model="product.template"><field name="name">SKM</field><field name="type">product</field><field name="uom_id" ref="uom_ml"/><field name="x_is_ingredient">True</field><field name="sale_ok" eval="False"/></record>
+        <record id="ing_air_kelapa" model="product.template"><field name="name">Air Kelapa</field><field name="type">product</field><field name="uom_id" ref="uom_ml"/><field name="x_is_ingredient">True</field><field name="sale_ok" eval="False"/></record>
+        <record id="ing_mineral_water" model="product.template"><field name="name">Air Mineral Galon</field><field name="type">product</field><field name="uom_id" ref="uom_ml"/><field name="x_is_ingredient">True</field><field name="sale_ok" eval="False"/></record>
+        <record id="ing_sparkling_soda" model="product.template"><field name="name">Sparkling Soda</field><field name="type">product</field><field name="uom_id" ref="uom_ml"/><field name="x_is_ingredient">True</field><field name="sale_ok" eval="False"/></record>
+        <record id="ing_orange_juice" model="product.template"><field name="name">Orange Juice</field><field name="type">product</field><field name="uom_id" ref="uom_ml"/><field name="x_is_ingredient">True</field><field name="sale_ok" eval="False"/></record>
+        <record id="ing_saos_tiram" model="product.template"><field name="name">Saos Tiram</field><field name="type">product</field><field name="uom_id" ref="uom_ml"/><field name="x_is_ingredient">True</field><field name="sale_ok" eval="False"/></record>
+        <record id="ing_kecap" model="product.template"><field name="name">Kecap</field><field name="type">product</field><field name="uom_id" ref="uom_ml"/><field name="x_is_ingredient">True</field><field name="sale_ok" eval="False"/></record>
+        <record id="ing_minyak" model="product.template"><field name="name">Minyak Goreng</field><field name="type">product</field><field name="uom_id" ref="uom_ml"/><field name="x_is_ingredient">True</field><field name="sale_ok" eval="False"/></record>
+
+        <!-- Powders/Dry Goods -->
+        <record id="ing_matcha_powder" model="product.template"><field name="name">Matcha Powder</field><field name="type">product</field><field name="uom_id" ref="uom_gram"/><field name="x_is_ingredient">True</field><field name="sale_ok" eval="False"/></record>
+        <record id="ing_chocolate_powder" model="product.template"><field name="name">Chocolate Powder</field><field name="type">product</field><field name="uom_id" ref="uom_gram"/><field name="x_is_ingredient">True</field><field name="sale_ok" eval="False"/></record>
+        <record id="ing_redvelvet_powder" model="product.template"><field name="name">Red Velvet Powder</field><field name="type">product</field><field name="uom_id" ref="uom_gram"/><field name="x_is_ingredient">True</field><field name="sale_ok" eval="False"/></record>
+        <record id="ing_selasih" model="product.template"><field name="name">Selasih</field><field name="type">product</field><field name="uom_id" ref="uom_gram"/><field name="x_is_ingredient">True</field><field name="sale_ok" eval="False"/></record>
+        <record id="ing_cabe_giling" model="product.template"><field name="name">Cabe Giling</field><field name="type">product</field><field name="uom_id" ref="uom_gram"/><field name="x_is_ingredient">True</field><field name="sale_ok" eval="False"/></record>
+        <record id="ing_bawang_putih" model="product.template"><field name="name">Bawang Putih</field><field name="type">product</field><field name="uom_id" ref="uom_gram"/><field name="x_is_ingredient">True</field><field name="sale_ok" eval="False"/></record>
+        <record id="ing_sawi" model="product.template"><field name="name">Sawi</field><field name="type">product</field><field name="uom_id" ref="uom_gram"/><field name="x_is_ingredient">True</field><field name="sale_ok" eval="False"/></record>
+        <record id="ing_udang_rebon" model="product.template"><field name="name">Udang Rebon</field><field name="type">product</field><field name="uom_id" ref="uom_gram"/><field name="x_is_ingredient">True</field><field name="sale_ok" eval="False"/></record>
+        <record id="ing_nasi_putih" model="product.template"><field name="name">Nasi Putih</field><field name="type">product</field><field name="uom_id" ref="uom_gram"/><field name="x_is_ingredient">True</field><field name="sale_ok" eval="False"/></record>
+        <record id="ing_masako" model="product.template"><field name="name">Masako</field><field name="type">product</field><field name="uom_id" ref="uom_gram"/><field name="x_is_ingredient">True</field><field name="sale_ok" eval="False"/></record>
+        <record id="ing_micin" model="product.template"><field name="name">Micin</field><field name="type">product</field><field name="uom_id" ref="uom_gram"/><field name="x_is_ingredient">True</field><field name="sale_ok" eval="False"/></record>
+        <record id="ing_garam" model="product.template"><field name="name">Garam</field><field name="type">product</field><field name="uom_id" ref="uom_gram"/><field name="x_is_ingredient">True</field><field name="sale_ok" eval="False"/></record>
+        <record id="ing_cumi" model="product.template"><field name="name">Cumi-cumi</field><field name="type">product</field><field name="uom_id" ref="uom_gram"/><field name="x_is_ingredient">True</field><field name="sale_ok" eval="False"/></record>
+        <record id="ing_udang" model="product.template"><field name="name">Udang</field><field name="type">product</field><field name="uom_id" ref="uom_gram"/><field name="x_is_ingredient">True</field><field name="sale_ok" eval="False"/></record>
+        <record id="ing_bumbu_soto" model="product.template"><field name="name">Bumbu Soto</field><field name="type">product</field><field name="uom_id" ref="uom_gram"/><field name="x_is_ingredient">True</field><field name="sale_ok" eval="False"/></record>
+        <record id="ing_cabe_keriting" model="product.template"><field name="name">Cabe Keriting</field><field name="type">product</field><field name="uom_id" ref="uom_gram"/><field name="x_is_ingredient">True</field><field name="sale_ok" eval="False"/></record>
+        <record id="ing_mie_kwetiau" model="product.template"><field name="name">Mie Kwetiau</field><field name="type">product</field><field name="uom_id" ref="uom_gram"/><field name="x_is_ingredient">True</field><field name="sale_ok" eval="False"/></record>
+        <record id="ing_dada_ayam" model="product.template"><field name="name">Dada Ayam</field><field name="type">product</field><field name="uom_id" ref="uom_gram"/><field name="x_is_ingredient">True</field><field name="sale_ok" eval="False"/></record>
+        <record id="ing_tepung_terigu" model="product.template"><field name="name">Tepung Terigu</field><field name="type">product</field><field name="uom_id" ref="uom_gram"/><field name="x_is_ingredient">True</field><field name="sale_ok" eval="False"/></record>
+        <record id="ing_ladaku" model="product.template"><field name="name">Lada ku</field><field name="type">product</field><field name="uom_id" ref="uom_gram"/><field name="x_is_ingredient">True</field><field name="sale_ok" eval="False"/></record>
+        <record id="ing_segitiga_biru" model="product.template"><field name="name">Segitiga Biru (Gendum)</field><field name="type">product</field><field name="uom_id" ref="uom_gram"/><field name="x_is_ingredient">True</field><field name="sale_ok" eval="False"/></record>
+        <record id="ing_bawang_merah" model="product.template"><field name="name">Bawang Merah</field><field name="type">product</field><field name="uom_id" ref="uom_gram"/><field name="x_is_ingredient">True</field><field name="sale_ok" eval="False"/></record>
+        <record id="ing_cabe_setan" model="product.template"><field name="name">Cabe Setan</field><field name="type">product</field><field name="uom_id" ref="uom_gram"/><field name="x_is_ingredient">True</field><field name="sale_ok" eval="False"/></record>
+
+        <!-- Unit Ingredients -->
+        <record id="ing_tomat" model="product.template"><field name="name">Tomat</field><field name="type">product</field><field name="uom_id" ref="uom.product_uom_unit"/><field name="x_is_ingredient">True</field><field name="sale_ok" eval="False"/></record>
+        <record id="ing_mie_burung_dara" model="product.template"><field name="name">Mie Burung Dara</field><field name="type">product</field><field name="uom_id" ref="uom.product_uom_unit"/><field name="x_is_ingredient">True</field><field name="sale_ok" eval="False"/></record>
+        <record id="ing_timun" model="product.template"><field name="name">Timun</field><field name="type">product</field><field name="uom_id" ref="uom.product_uom_unit"/><field name="x_is_ingredient">True</field><field name="sale_ok" eval="False"/></record>
+        <record id="ing_telur" model="product.template"><field name="name">Telur</field><field name="type">product</field><field name="uom_id" ref="uom.product_uom_unit"/><field name="x_is_ingredient">True</field><field name="sale_ok" eval="False"/></record>
+
+        <!-- Liquid Syrups/Flavor -->
+        <record id="ing_palme_liquid" model="product.template"><field name="name">Liquid Palme</field><field name="type">product</field><field name="uom_id" ref="uom_ml"/><field name="x_is_ingredient">True</field><field name="sale_ok" eval="False"/></record>
+        <record id="ing_scothcie_liquid" model="product.template"><field name="name">Liquid Scothcie</field><field name="type">product</field><field name="uom_id" ref="uom_ml"/><field name="x_is_ingredient">True</field><field name="sale_ok" eval="False"/></record>
+        <record id="ing_vanille_liquid" model="product.template"><field name="name">Liquid Vanille</field><field name="type">product</field><field name="uom_id" ref="uom_ml"/><field name="x_is_ingredient">True</field><field name="sale_ok" eval="False"/></record>
+        <record id="ing_rume_liquid" model="product.template"><field name="name">Liquid Rume</field><field name="type">product</field><field name="uom_id" ref="uom_ml"/><field name="x_is_ingredient">True</field><field name="sale_ok" eval="False"/></record>
+        <record id="ing_monkist_liquid" model="product.template"><field name="name">Liquid Monkist</field><field name="type">product</field><field name="uom_id" ref="uom_ml"/><field name="x_is_ingredient">True</field><field name="sale_ok" eval="False"/></record>
+        <record id="ing_shaka_liquid" model="product.template"><field name="name">Liquid Shaka</field><field name="type">product</field><field name="uom_id" ref="uom_ml"/><field name="x_is_ingredient">True</field><field name="sale_ok" eval="False"/></record>
+        <record id="ing_nutty_liquid" model="product.template"><field name="name">Liquid Nutty</field><field name="type">product</field><field name="uom_id" ref="uom_ml"/><field name="x_is_ingredient">True</field><field name="sale_ok" eval="False"/></record>
+        <record id="ing_elder_liquid" model="product.template"><field name="name">Liquid Elder</field><field name="type">product</field><field name="uom_id" ref="uom_ml"/><field name="x_is_ingredient">True</field><field name="sale_ok" eval="False"/></record>
+        <record id="ing_lychee_liquid" model="product.template"><field name="name">Liquid Lychee</field><field name="type">product</field><field name="uom_id" ref="uom_ml"/><field name="x_is_ingredient">True</field><field name="sale_ok" eval="False"/></record>
+        <record id="ing_lemon_liquid" model="product.template"><field name="name">Liquid Lemon</field><field name="type">product</field><field name="uom_id" ref="uom_ml"/><field name="x_is_ingredient">True</field><field name="sale_ok" eval="False"/></record>
+        <record id="ing_blue_lagoon_liquid" model="product.template"><field name="name">Liquid Blue Lagoon</field><field name="type">product</field><field name="uom_id" ref="uom_ml"/><field name="x_is_ingredient">True</field><field name="sale_ok" eval="False"/></record>
+        <record id="ing_lemon_based" model="product.template"><field name="name">Lemon Based</field><field name="type">product</field><field name="uom_id" ref="uom_ml"/><field name="x_is_ingredient">True</field><field name="sale_ok" eval="False"/></record>
+        <record id="ing_lychee_based" model="product.template"><field name="name">Lychee Based</field><field name="type">product</field><field name="uom_id" ref="uom_ml"/><field name="x_is_ingredient">True</field><field name="sale_ok" eval="False"/></record>
+
+        <!-- Solid Fruits/Garnish -->
+        <record id="ing_dryed_lemon" model="product.template"><field name="name">Dryed Lemon</field><field name="type">product</field><field name="uom_id" ref="uom.product_uom_unit"/><field name="x_is_ingredient">True</field><field name="sale_ok" eval="False"/></record>
+        <record id="ing_lemon_fruit" model="product.template"><field name="name">Buah Lemon</field><field name="type">product</field><field name="uom_id" ref="uom.product_uom_unit"/><field name="x_is_ingredient">True</field><field name="sale_ok" eval="False"/></record>
+        <record id="ing_lychee_fruit" model="product.template"><field name="name">Buah Leci</field><field name="type">product</field><field name="uom_id" ref="uom.product_uom_unit"/><field name="x_is_ingredient">True</field><field name="sale_ok" eval="False"/></record>
+        <record id="ing_es_batu" model="product.template"><field name="name">Es Batu</field><field name="type">product</field><field name="uom_id" ref="uom.product_uom_unit"/><field name="x_is_ingredient">True</field><field name="sale_ok" eval="False"/></record>
+
+        <!-- MENU: BASIC COFFEE -->
+        <record id="prod_black_ice" model="product.template"><field name="name">Black (Ice)</field><field name="list_price">12000</field><field name="pos_categ_ids" eval="[(6,0,[ref('pos_category_basic_coffee')])]"/><field name="x_is_purecf_product">True</field><field name="available_in_pos">True</field><field name="sale_ok" eval="True"/><field name="purchase_ok" eval="False"/></record>
+        <record id="prod_black_hot" model="product.template"><field name="name">Black (Hot)</field><field name="list_price">11000</field><field name="pos_categ_ids" eval="[(6,0,[ref('pos_category_basic_coffee')])]"/><field name="x_is_purecf_product">True</field><field name="available_in_pos">True</field><field name="sale_ok" eval="True"/><field name="purchase_ok" eval="False"/></record>
+        <record id="prod_white_ice" model="product.template"><field name="name">White (Ice)</field><field name="list_price">15000</field><field name="pos_categ_ids" eval="[(6,0,[ref('pos_category_basic_coffee')])]"/><field name="x_is_purecf_product">True</field><field name="available_in_pos">True</field><field name="sale_ok" eval="True"/><field name="purchase_ok" eval="False"/></record>
+
+        <!-- MENU: ICED COFFEE -->
+        <record id="prod_palme" model="product.template"><field name="name">Palme</field><field name="list_price">16000</field><field name="pos_categ_ids" eval="[(6,0,[ref('pos_category_iced_coffee')])]"/><field name="x_is_purecf_product">True</field><field name="available_in_pos">True</field><field name="sale_ok" eval="True"/><field name="purchase_ok" eval="False"/></record>
+        <record id="prod_scothcie" model="product.template"><field name="name">Scothcie</field><field name="list_price">18000</field><field name="pos_categ_ids" eval="[(6,0,[ref('pos_category_iced_coffee')])]"/><field name="x_is_purecf_product">True</field><field name="available_in_pos">True</field><field name="sale_ok" eval="True"/><field name="purchase_ok" eval="False"/></record>
+        <record id="prod_vanille" model="product.template"><field name="name">Vanille</field><field name="list_price">18000</field><field name="pos_categ_ids" eval="[(6,0,[ref('pos_category_iced_coffee')])]"/><field name="x_is_purecf_product">True</field><field name="available_in_pos">True</field><field name="sale_ok" eval="True"/><field name="purchase_ok" eval="False"/></record>
+        <record id="prod_rume" model="product.template"><field name="name">Rume</field><field name="list_price">18000</field><field name="pos_categ_ids" eval="[(6,0,[ref('pos_category_iced_coffee')])]"/><field name="x_is_purecf_product">True</field><field name="available_in_pos">True</field><field name="sale_ok" eval="True"/><field name="purchase_ok" eval="False"/></record>
+        <record id="prod_monkist" model="product.template"><field name="name">Monkist</field><field name="list_price">18000</field><field name="pos_categ_ids" eval="[(6,0,[ref('pos_category_iced_coffee')])]"/><field name="x_is_purecf_product">True</field><field name="available_in_pos">True</field><field name="sale_ok" eval="True"/><field name="purchase_ok" eval="False"/></record>
+        <record id="prod_shaka" model="product.template"><field name="name">Shaka</field><field name="list_price">18000</field><field name="pos_categ_ids" eval="[(6,0,[ref('pos_category_iced_coffee')])]"/><field name="x_is_purecf_product">True</field><field name="available_in_pos">True</field><field name="sale_ok" eval="True"/><field name="purchase_ok" eval="False"/></record>
+        <record id="prod_nutty" model="product.template"><field name="name">Nutty</field><field name="list_price">18000</field><field name="pos_categ_ids" eval="[(6,0,[ref('pos_category_iced_coffee')])]"/><field name="x_is_purecf_product">True</field><field name="available_in_pos">True</field><field name="sale_ok" eval="True"/><field name="purchase_ok" eval="False"/></record>
+
+        <!-- MENU: SIGNATURE -->
+        <record id="prod_coco_blossom" model="product.template"><field name="name">Coco Blossom</field><field name="list_price">22000</field><field name="pos_categ_ids" eval="[(6,0,[ref('pos_category_signature')])]"/><field name="x_is_purecf_product">True</field><field name="available_in_pos">True</field><field name="sale_ok" eval="True"/><field name="purchase_ok" eval="False"/></record>
+        <record id="prod_black_island" model="product.template"><field name="name">Black Island</field><field name="list_price">20000</field><field name="pos_categ_ids" eval="[(6,0,[ref('pos_category_signature')])]"/><field name="x_is_purecf_product">True</field><field name="available_in_pos">True</field><field name="sale_ok" eval="True"/><field name="purchase_ok" eval="False"/></record>
+        <record id="prod_dirty_matcha" model="product.template"><field name="name">Dirty Matcha</field><field name="list_price">25000</field><field name="pos_categ_ids" eval="[(6,0,[ref('pos_category_signature')])]"/><field name="x_is_purecf_product">True</field><field name="available_in_pos">True</field><field name="sale_ok" eval="True"/><field name="purchase_ok" eval="False"/></record>
+        <record id="prod_mochbrown" model="product.template"><field name="name">Mochbrown</field><field name="list_price">25000</field><field name="pos_categ_ids" eval="[(6,0,[ref('pos_category_signature')])]"/><field name="x_is_purecf_product">True</field><field name="available_in_pos">True</field><field name="sale_ok" eval="True"/><field name="purchase_ok" eval="False"/></record>
+
+        <!-- MENU: MILK BASE -->
+        <record id="prod_matcha" model="product.template"><field name="name">Matcha</field><field name="list_price">20000</field><field name="pos_categ_ids" eval="[(6,0,[ref('pos_category_milk_base')])]"/><field name="x_is_purecf_product">True</field><field name="available_in_pos">True</field><field name="sale_ok" eval="True"/><field name="purchase_ok" eval="False"/></record>
+        <record id="prod_redvelvet" model="product.template"><field name="name">Red Velvet</field><field name="list_price">20000</field><field name="pos_categ_ids" eval="[(6,0,[ref('pos_category_milk_base')])]"/><field name="x_is_purecf_product">True</field><field name="available_in_pos">True</field><field name="sale_ok" eval="True"/><field name="purchase_ok" eval="False"/></record>
+        <record id="prod_chocolate" model="product.template"><field name="name">Chocolate</field><field name="list_price">20000</field><field name="pos_categ_ids" eval="[(6,0,[ref('pos_category_milk_base')])]"/><field name="x_is_purecf_product">True</field><field name="available_in_pos">True</field><field name="sale_ok" eval="True"/><field name="purchase_ok" eval="False"/></record>
+
+        <!-- MENU: MOCKTAIL -->
+        <record id="prod_amer_range" model="product.template"><field name="name">Amer-range</field><field name="list_price">22000</field><field name="pos_categ_ids" eval="[(6,0,[ref('pos_category_mocktail')])]"/><field name="x_is_purecf_product">True</field><field name="available_in_pos">True</field><field name="sale_ok" eval="True"/><field name="purchase_ok" eval="False"/></record>
+        <record id="prod_elderblues" model="product.template"><field name="name">Elderblues</field><field name="list_price">22000</field><field name="pos_categ_ids" eval="[(6,0,[ref('pos_category_mocktail')])]"/><field name="x_is_purecf_product">True</field><field name="available_in_pos">True</field><field name="sale_ok" eval="True"/><field name="purchase_ok" eval="False"/></record>
+        <record id="prod_banana_boost" model="product.template"><field name="name">Banana Boost</field><field name="list_price">22000</field><field name="pos_categ_ids" eval="[(6,0,[ref('pos_category_mocktail')])]"/><field name="x_is_purecf_product">True</field><field name="available_in_pos">True</field><field name="sale_ok" eval="True"/><field name="purchase_ok" eval="False"/></record>
+
+        <!-- MENU: TEA BASE -->
+        <record id="prod_lemon_tea" model="product.template"><field name="name">Lemon Tea</field><field name="list_price">15000</field><field name="pos_categ_ids" eval="[(6,0,[ref('pos_category_tea_base')])]"/><field name="x_is_purecf_product">True</field><field name="available_in_pos">True</field><field name="sale_ok" eval="True"/><field name="purchase_ok" eval="False"/></record>
+        <record id="prod_lychee_tea" model="product.template"><field name="name">Lychee Tea</field><field name="list_price">18000</field><field name="pos_categ_ids" eval="[(6,0,[ref('pos_category_tea_base')])]"/><field name="x_is_purecf_product">True</field><field name="available_in_pos">True</field><field name="sale_ok" eval="True"/><field name="purchase_ok" eval="False"/></record>
+
+        <!-- MENU: OTHER -->
+        <record id="prod_mineral_water" model="product.template"><field name="name">Mineral Water</field><field name="list_price">6000</field><field name="pos_categ_ids" eval="[(6,0,[ref('pos_category_other')])]"/><field name="x_is_purecf_product">True</field><field name="available_in_pos">True</field><field name="sale_ok" eval="True"/><field name="purchase_ok" eval="False"/></record>
+        <record id="prod_espresso_menu" model="product.template"><field name="name">Espresso</field><field name="list_price">5000</field><field name="pos_categ_ids" eval="[(6,0,[ref('pos_category_other')])]"/><field name="x_is_purecf_product">True</field><field name="available_in_pos">True</field><field name="sale_ok" eval="True"/><field name="purchase_ok" eval="False"/></record>
+
+        <!-- MENU: BUBUR KETAN HITAM -->
+        <record id="prod_bubur_original" model="product.template"><field name="name">Bubur Ketan Hitam Original</field><field name="list_price">12000</field><field name="pos_categ_ids" eval="[(6,0,[ref('pos_category_bubur')])]"/><field name="x_is_purecf_product">True</field><field name="available_in_pos">True</field><field name="sale_ok" eval="True"/><field name="purchase_ok" eval="False"/></record>
+        <record id="prod_bubur_1_topping" model="product.template"><field name="name">Bubur Ketan Hitam + 1 Topping</field><field name="list_price">15000</field><field name="pos_categ_ids" eval="[(6,0,[ref('pos_category_bubur')])]"/><field name="x_is_purecf_product">True</field><field name="available_in_pos">True</field><field name="sale_ok" eval="True"/><field name="purchase_ok" eval="False"/></record>
+        <record id="prod_bubur_2_topping" model="product.template"><field name="name">Bubur Ketan Hitam + 2 Topping</field><field name="list_price">18000</field><field name="pos_categ_ids" eval="[(6,0,[ref('pos_category_bubur')])]"/><field name="x_is_purecf_product">True</field><field name="available_in_pos">True</field><field name="sale_ok" eval="True"/><field name="purchase_ok" eval="False"/></record>
+
+        <!-- FOODIES: MAIN COURSE -->
+        <record id="food_nasgor_pure" model="product.template"><field name="name">Nasi Goreng Pure</field><field name="list_price">22000</field><field name="pos_categ_ids" eval="[(6,0,[ref('pos_category_main_course')])]"/><field name="x_is_purecf_product">True</field><field name="available_in_pos">True</field><field name="sale_ok" eval="True"/><field name="purchase_ok" eval="False"/></record>
+        <record id="food_nasgor_seafood" model="product.template"><field name="name">Nasi Goreng Seafood</field><field name="list_price">28000</field><field name="pos_categ_ids" eval="[(6,0,[ref('pos_category_main_course')])]"/><field name="x_is_purecf_product">True</field><field name="available_in_pos">True</field><field name="sale_ok" eval="True"/><field name="purchase_ok" eval="False"/></record>
+        <record id="food_kwetiaw_pure" model="product.template"><field name="name">Kwetiaw Pure</field><field name="list_price">22000</field><field name="pos_categ_ids" eval="[(6,0,[ref('pos_category_main_course')])]"/><field name="x_is_purecf_product">True</field><field name="available_in_pos">True</field><field name="sale_ok" eval="True"/><field name="purchase_ok" eval="False"/></record>
+        <record id="food_kwetiaw_seafood" model="product.template"><field name="name">Kwetiaw Seafood</field><field name="list_price">28000</field><field name="pos_categ_ids" eval="[(6,0,[ref('pos_category_main_course')])]"/><field name="x_is_purecf_product">True</field><field name="available_in_pos">True</field><field name="sale_ok" eval="True"/><field name="purchase_ok" eval="False"/></record>
+        <record id="food_mie_tektek" model="product.template"><field name="name">Mie Tek-Tek</field><field name="list_price">22000</field><field name="pos_categ_ids" eval="[(6,0,[ref('pos_category_main_course')])]"/><field name="x_is_purecf_product">True</field><field name="available_in_pos">True</field><field name="sale_ok" eval="True"/><field name="purchase_ok" eval="False"/></record>
+        <record id="food_mie_tektek_seafood" model="product.template"><field name="name">Mie Tek-Tek Seafood</field><field name="list_price">28000</field><field name="pos_categ_ids" eval="[(6,0,[ref('pos_category_main_course')])]"/><field name="x_is_purecf_product">True</field><field name="available_in_pos">True</field><field name="sale_ok" eval="True"/><field name="purchase_ok" eval="False"/></record>
+        <record id="food_nasi_ayam_goreng" model="product.template"><field name="name">Nasi Ayam Goreng</field><field name="list_price">25000</field><field name="pos_categ_ids" eval="[(6,0,[ref('pos_category_main_course')])]"/><field name="x_is_purecf_product">True</field><field name="available_in_pos">True</field><field name="sale_ok" eval="True"/><field name="purchase_ok" eval="False"/></record>
+        <record id="food_ricebowl_dabu" model="product.template"><field name="name">Ricebowl Sambal Dabu-Dabu</field><field name="list_price">25000</field><field name="pos_categ_ids" eval="[(6,0,[ref('pos_category_main_course')])]"/><field name="x_is_purecf_product">True</field><field name="available_in_pos">True</field><field name="sale_ok" eval="True"/><field name="purchase_ok" eval="False"/></record>
+
+        <!-- FOODIES: SIDE DISH -->
+        <record id="side_dimsum_mentai" model="product.template"><field name="name">Dimsum Mentai @6</field><field name="list_price">25000</field><field name="pos_categ_ids" eval="[(6,0,[ref('pos_category_side_dish')])]"/><field name="x_is_purecf_product">True</field><field name="available_in_pos">True</field><field name="sale_ok" eval="True"/><field name="purchase_ok" eval="True"/></record>
+        <record id="side_mix_platter" model="product.template"><field name="name">Mix Platter</field><field name="list_price">22000</field><field name="pos_categ_ids" eval="[(6,0,[ref('pos_category_side_dish')])]"/><field name="x_is_purecf_product">True</field><field name="available_in_pos">True</field><field name="sale_ok" eval="True"/><field name="purchase_ok" eval="False"/></record>
+        <record id="side_french_fries" model="product.template"><field name="name">French Fries</field><field name="list_price">15000</field><field name="pos_categ_ids" eval="[(6,0,[ref('pos_category_side_dish')])]"/><field name="x_is_purecf_product">True</field><field name="available_in_pos">True</field><field name="sale_ok" eval="True"/><field name="purchase_ok" eval="False"/></record>
+        <record id="side_spaghetti_brulee" model="product.template"><field name="name">Spaghetti Brulee</field><field name="list_price">16000</field><field name="pos_categ_ids" eval="[(6,0,[ref('pos_category_side_dish')])]"/><field name="x_is_purecf_product">True</field><field name="available_in_pos">True</field><field name="sale_ok" eval="True"/><field name="purchase_ok" eval="True"/></record>
+        <record id="side_maccaroni_schottel" model="product.template"><field name="name">Maccaroni Schottel</field><field name="list_price">16000</field><field name="pos_categ_ids" eval="[(6,0,[ref('pos_category_side_dish')])]"/><field name="x_is_purecf_product">True</field><field name="available_in_pos">True</field><field name="sale_ok" eval="True"/><field name="purchase_ok" eval="True"/></record>
+        <record id="side_banana_bread" model="product.template"><field name="name">Banana Bread Ice Cream</field><field name="list_price">16000</field><field name="pos_categ_ids" eval="[(6,0,[ref('pos_category_side_dish')])]"/><field name="x_is_purecf_product">True</field><field name="available_in_pos">True</field><field name="sale_ok" eval="True"/><field name="purchase_ok" eval="True"/></record>
+        <record id="side_brownies_pudding" model="product.template"><field name="name">Brownies Banana Pudding</field><field name="list_price">12000</field><field name="pos_categ_ids" eval="[(6,0,[ref('pos_category_side_dish')])]"/><field name="x_is_purecf_product">True</field><field name="available_in_pos">True</field><field name="sale_ok" eval="True"/><field name="purchase_ok" eval="True"/></record>
+        <record id="side_indomie_goreng" model="product.template"><field name="name">Indomie Goreng + Telur</field><field name="list_price">12000</field><field name="pos_categ_ids" eval="[(6,0,[ref('pos_category_side_dish')])]"/><field name="x_is_purecf_product">True</field><field name="available_in_pos">True</field><field name="sale_ok" eval="True"/><field name="purchase_ok" eval="False"/></record>
+        <record id="side_indomie_kuah" model="product.template"><field name="name">Indomie Kuah + Telur</field><field name="list_price">12000</field><field name="pos_categ_ids" eval="[(6,0,[ref('pos_category_side_dish')])]"/><field name="x_is_purecf_product">True</field><field name="available_in_pos">True</field><field name="sale_ok" eval="True"/><field name="purchase_ok" eval="False"/></record>
+        <record id="side_nasi_bakar" model="product.template"><field name="name">Nasi Bakar</field><field name="list_price">12000</field><field name="pos_categ_ids" eval="[(6,0,[ref('pos_category_side_dish')])]"/><field name="x_is_purecf_product">True</field><field name="available_in_pos">True</field><field name="sale_ok" eval="True"/><field name="purchase_ok" eval="False"/></record>
+        <record id="side_wanpaku_sandwich" model="product.template"><field name="name">Wanpaku Sandwich</field><field name="list_price">12000</field><field name="pos_categ_ids" eval="[(6,0,[ref('pos_category_side_dish')])]"/><field name="x_is_purecf_product">True</field><field name="available_in_pos">True</field><field name="sale_ok" eval="True"/><field name="purchase_ok" eval="True"/></record>
+        <record id="side_slice_cake" model="product.template"><field name="name">Slice Cake</field><field name="list_price">15000</field><field name="pos_categ_ids" eval="[(6,0,[ref('pos_category_side_dish')])]"/><field name="x_is_purecf_product">True</field><field name="available_in_pos">True</field><field name="sale_ok" eval="True"/><field name="purchase_ok" eval="True"/></record>
+
+        <!-- Bill of Materials (Phantom) -->
+        <!-- BASIC COFFEE -->
+        <record id="bom_black_ice" model="mrp.bom">
+            <field name="product_tmpl_id" ref="prod_black_ice"/>
+            <field name="product_qty">1</field>
+            <field name="type">phantom</field>
+            <field name="bom_line_ids" eval="[
+                (0,0,{'product_id':ref('ing_cup_ice'),'product_qty':1}),
+                (0,0,{'product_id':ref('ing_espresso'),'product_qty':30}),
+                (0,0,{'product_id':ref('ing_mineral_water'),'product_qty':100}),
+            ]"/>
+        </record>
+        <record id="bom_black_hot" model="mrp.bom">
+            <field name="product_tmpl_id" ref="prod_black_hot"/>
+            <field name="product_qty">1</field>
+            <field name="type">phantom</field>
+            <field name="bom_line_ids" eval="[
+                (0,0,{'product_id':ref('ing_cup_hot'),'product_qty':1}),
+                (0,0,{'product_id':ref('ing_espresso'),'product_qty':30}),
+                (0,0,{'product_id':ref('ing_mineral_water'),'product_qty':100}),
+            ]"/>
+        </record>
+        <record id="bom_white_ice" model="mrp.bom">
+            <field name="product_tmpl_id" ref="prod_white_ice"/>
+            <field name="product_qty">1</field>
+            <field name="type">phantom</field>
+            <field name="bom_line_ids" eval="[
+                (0,0,{'product_id':ref('ing_cup_ice'),'product_qty':1}),
+                (0,0,{'product_id':ref('ing_espresso'),'product_qty':30}),
+                (0,0,{'product_id':ref('ing_puremilk'),'product_qty':30}),
+                (0,0,{'product_id':ref('ing_uht'),'product_qty':100}),
+            ]"/>
+        </record>
+
+        <!-- ICED COFFEE -->
+        <record id="bom_palme" model="mrp.bom">
+            <field name="product_tmpl_id" ref="prod_palme"/>
+            <field name="product_qty">1</field>
+            <field name="type">phantom</field>
+            <field name="bom_line_ids" eval="[
+                (0,0,{'product_id':ref('ing_cup_ice'),'product_qty':1}),
+                (0,0,{'product_id':ref('ing_palme_liquid'),'product_qty':15}),
+                (0,0,{'product_id':ref('ing_puremilk'),'product_qty':30}),
+                (0,0,{'product_id':ref('ing_uht'),'product_qty':100}),
+                (0,0,{'product_id':ref('ing_espresso'),'product_qty':30}),
+            ]"/>
+        </record>
+        <record id="bom_scothcie" model="mrp.bom">
+            <field name="product_tmpl_id" ref="prod_scothcie"/>
+            <field name="product_qty">1</field>
+            <field name="type">phantom</field>
+            <field name="bom_line_ids" eval="[
+                (0,0,{'product_id':ref('ing_cup_ice'),'product_qty':1}),
+                (0,0,{'product_id':ref('ing_scothcie_liquid'),'product_qty':10}),
+                (0,0,{'product_id':ref('ing_puremilk'),'product_qty':30}),
+                (0,0,{'product_id':ref('ing_uht'),'product_qty':100}),
+                (0,0,{'product_id':ref('ing_espresso'),'product_qty':30}),
+            ]"/>
+        </record>
+        <record id="bom_vanille" model="mrp.bom">
+            <field name="product_tmpl_id" ref="prod_vanille"/>
+            <field name="product_qty">1</field>
+            <field name="type">phantom</field>
+            <field name="bom_line_ids" eval="[
+                (0,0,{'product_id':ref('ing_cup_ice'),'product_qty':1}),
+                (0,0,{'product_id':ref('ing_vanille_liquid'),'product_qty':15}),
+                (0,0,{'product_id':ref('ing_puremilk'),'product_qty':30}),
+                (0,0,{'product_id':ref('ing_uht'),'product_qty':100}),
+                (0,0,{'product_id':ref('ing_espresso'),'product_qty':30}),
+            ]"/>
+        </record>
+        <record id="bom_rume" model="mrp.bom">
+            <field name="product_tmpl_id" ref="prod_rume"/>
+            <field name="product_qty">1</field>
+            <field name="type">phantom</field>
+            <field name="bom_line_ids" eval="[
+                (0,0,{'product_id':ref('ing_cup_ice'),'product_qty':1}),
+                (0,0,{'product_id':ref('ing_rume_liquid'),'product_qty':15}),
+                (0,0,{'product_id':ref('ing_puremilk'),'product_qty':30}),
+                (0,0,{'product_id':ref('ing_uht'),'product_qty':100}),
+                (0,0,{'product_id':ref('ing_espresso'),'product_qty':30}),
+            ]"/>
+        </record>
+        <record id="bom_monkist" model="mrp.bom">
+            <field name="product_tmpl_id" ref="prod_monkist"/>
+            <field name="product_qty">1</field>
+            <field name="type">phantom</field>
+            <field name="bom_line_ids" eval="[
+                (0,0,{'product_id':ref('ing_cup_ice'),'product_qty':1}),
+                (0,0,{'product_id':ref('ing_monkist_liquid'),'product_qty':15}),
+                (0,0,{'product_id':ref('ing_puremilk'),'product_qty':30}),
+                (0,0,{'product_id':ref('ing_uht'),'product_qty':100}),
+                (0,0,{'product_id':ref('ing_espresso'),'product_qty':30}),
+            ]"/>
+        </record>
+        <record id="bom_shaka" model="mrp.bom">
+            <field name="product_tmpl_id" ref="prod_shaka"/>
+            <field name="product_qty">1</field>
+            <field name="type">phantom</field>
+            <field name="bom_line_ids" eval="[
+                (0,0,{'product_id':ref('ing_cup_ice'),'product_qty':1}),
+                (0,0,{'product_id':ref('ing_shaka_liquid'),'product_qty':15}),
+                (0,0,{'product_id':ref('ing_puremilk'),'product_qty':30}),
+                (0,0,{'product_id':ref('ing_uht'),'product_qty':100}),
+                (0,0,{'product_id':ref('ing_espresso'),'product_qty':30}),
+            ]"/>
+        </record>
+        <record id="bom_nutty" model="mrp.bom">
+            <field name="product_tmpl_id" ref="prod_nutty"/>
+            <field name="product_qty">1</field>
+            <field name="type">phantom</field>
+            <field name="bom_line_ids" eval="[
+                (0,0,{'product_id':ref('ing_cup_ice'),'product_qty':1}),
+                (0,0,{'product_id':ref('ing_nutty_liquid'),'product_qty':15}),
+                (0,0,{'product_id':ref('ing_puremilk'),'product_qty':30}),
+                (0,0,{'product_id':ref('ing_uht'),'product_qty':100}),
+                (0,0,{'product_id':ref('ing_espresso'),'product_qty':30}),
+            ]"/>
+        </record>
+
+        <!-- SIGNATURE -->
+        <record id="bom_coco_blossom" model="mrp.bom">
+            <field name="product_tmpl_id" ref="prod_coco_blossom"/>
+            <field name="product_qty">1</field>
+            <field name="type">phantom</field>
+            <field name="bom_line_ids" eval="[
+                (0,0,{'product_id':ref('ing_cup_ice'),'product_qty':1}),
+                (0,0,{'product_id':ref('ing_shaka_liquid'),'product_qty':15}),
+                (0,0,{'product_id':ref('ing_air_kelapa'),'product_qty':120}),
+            ]"/>
+        </record>
+        <record id="bom_black_island" model="mrp.bom">
+            <field name="product_tmpl_id" ref="prod_black_island"/>
+            <field name="product_qty">1</field>
+            <field name="type">phantom</field>
+            <field name="bom_line_ids" eval="[
+                (0,0,{'product_id':ref('ing_cup_ice'),'product_qty':1}),
+                (0,0,{'product_id':ref('ing_espresso'),'product_qty':30}),
+                (0,0,{'product_id':ref('ing_air_kelapa'),'product_qty':120}),
+            ]"/>
+        </record>
+        <record id="bom_dirty_matcha" model="mrp.bom">
+            <field name="product_tmpl_id" ref="prod_dirty_matcha"/>
+            <field name="product_qty">1</field>
+            <field name="type">phantom</field>
+            <field name="bom_line_ids" eval="[
+                (0,0,{'product_id':ref('ing_cup_ice'),'product_qty':1}),
+                (0,0,{'product_id':ref('ing_matcha_powder'),'product_qty':15}),
+                (0,0,{'product_id':ref('ing_puremilk'),'product_qty':30}),
+                (0,0,{'product_id':ref('ing_uht'),'product_qty':100}),
+                (0,0,{'product_id':ref('ing_espresso'),'product_qty':30}),
+            ]"/>
+        </record>
+        <record id="bom_mochbrown" model="mrp.bom">
+            <field name="product_tmpl_id" ref="prod_mochbrown"/>
+            <field name="product_qty">1</field>
+            <field name="type">phantom</field>
+            <field name="bom_line_ids" eval="[
+                (0,0,{'product_id':ref('ing_cup_ice'),'product_qty':1}),
+                (0,0,{'product_id':ref('ing_palme_liquid'),'product_qty':10}),
+                (0,0,{'product_id':ref('ing_chocolate_powder'),'product_qty':20}),
+                (0,0,{'product_id':ref('ing_skm'),'product_qty':5}),
+                (0,0,{'product_id':ref('ing_uht'),'product_qty':60}),
+                (0,0,{'product_id':ref('ing_espresso'),'product_qty':30}),
+            ]"/>
+        </record>
+
+        <!-- MILK BASE -->
+        <record id="bom_matcha" model="mrp.bom">
+            <field name="product_tmpl_id" ref="prod_matcha"/>
+            <field name="product_qty">1</field>
+            <field name="type">phantom</field>
+            <field name="bom_line_ids" eval="[
+                (0,0,{'product_id':ref('ing_cup_ice'),'product_qty':1}),
+                (0,0,{'product_id':ref('ing_matcha_powder'),'product_qty':15}),
+                (0,0,{'product_id':ref('ing_puremilk'),'product_qty':30}),
+                (0,0,{'product_id':ref('ing_uht'),'product_qty':100}),
+            ]"/>
+        </record>
+        <record id="bom_redvelvet" model="mrp.bom">
+            <field name="product_tmpl_id" ref="prod_redvelvet"/>
+            <field name="product_qty">1</field>
+            <field name="type">phantom</field>
+            <field name="bom_line_ids" eval="[
+                (0,0,{'product_id':ref('ing_cup_ice'),'product_qty':1}),
+                (0,0,{'product_id':ref('ing_redvelvet_powder'),'product_qty':15}),
+                (0,0,{'product_id':ref('ing_skm'),'product_qty':10}),
+                (0,0,{'product_id':ref('ing_uht'),'product_qty':100}),
+            ]"/>
+        </record>
+        <record id="bom_chocolate" model="mrp.bom">
+            <field name="product_tmpl_id" ref="prod_chocolate"/>
+            <field name="product_qty">1</field>
+            <field name="type">phantom</field>
+            <field name="bom_line_ids" eval="[
+                (0,0,{'product_id':ref('ing_cup_ice'),'product_qty':1}),
+                (0,0,{'product_id':ref('ing_chocolate_powder'),'product_qty':15}),
+                (0,0,{'product_id':ref('ing_skm'),'product_qty':10}),
+                (0,0,{'product_id':ref('ing_uht'),'product_qty':100}),
+            ]"/>
+        </record>
+
+        <!-- MOCKTAILS -->
+        <record id="bom_amer_range" model="mrp.bom">
+            <field name="product_tmpl_id" ref="prod_amer_range"/>
+            <field name="product_qty">1</field>
+            <field name="type">phantom</field>
+            <field name="bom_line_ids" eval="[
+                (0,0,{'product_id':ref('ing_cup_ice'),'product_qty':1}),
+                (0,0,{'product_id':ref('ing_elder_liquid'),'product_qty':10}),
+                (0,0,{'product_id':ref('ing_lychee_liquid'),'product_qty':5}),
+                (0,0,{'product_id':ref('ing_orange_juice'),'product_qty':100}),
+                (0,0,{'product_id':ref('ing_espresso'),'product_qty':30}),
+                (0,0,{'product_id':ref('ing_dryed_lemon'),'product_qty':1}),
+            ]"/>
+        </record>
+        <record id="bom_elderblues" model="mrp.bom">
+            <field name="product_tmpl_id" ref="prod_elderblues"/>
+            <field name="product_qty">1</field>
+            <field name="type">phantom</field>
+            <field name="bom_line_ids" eval="[
+                (0,0,{'product_id':ref('ing_cup_ice'),'product_qty':1}),
+                (0,0,{'product_id':ref('ing_elder_liquid'),'product_qty':5}),
+                (0,0,{'product_id':ref('ing_blue_lagoon_liquid'),'product_qty':5}),
+                (0,0,{'product_id':ref('ing_lychee_liquid'),'product_qty':5}),
+                (0,0,{'product_id':ref('ing_sparkling_soda'),'product_qty':120}),
+                (0,0,{'product_id':ref('ing_lemon_fruit'),'product_qty':1}),
+            ]"/>
+        </record>
+        <record id="bom_banana_boost" model="mrp.bom">
+            <field name="product_tmpl_id" ref="prod_banana_boost"/>
+            <field name="product_qty">1</field>
+            <field name="type">phantom</field>
+            <field name="bom_line_ids" eval="[
+                (0,0,{'product_id':ref('ing_cup_ice'),'product_qty':1}),
+                (0,0,{'product_id':ref('ing_monkist_liquid'),'product_qty':10}),
+                (0,0,{'product_id':ref('ing_lemon_liquid'),'product_qty':5}),
+                (0,0,{'product_id':ref('ing_sparkling_soda'),'product_qty':120}),
+                (0,0,{'product_id':ref('ing_lemon_fruit'),'product_qty':1}),
+            ]"/>
+        </record>
+
+        <!-- TEA BASE -->
+        <record id="bom_lemon_tea" model="mrp.bom">
+            <field name="product_tmpl_id" ref="prod_lemon_tea"/>
+            <field name="product_qty">1</field>
+            <field name="type">phantom</field>
+            <field name="bom_line_ids" eval="[
+                (0,0,{'product_id':ref('ing_cup_ice'),'product_qty':1}),
+                (0,0,{'product_id':ref('ing_lemon_based'),'product_qty':30}),
+                (0,0,{'product_id':ref('ing_mineral_water'),'product_qty':100}),
+            ]"/>
+        </record>
+        <record id="bom_lychee_tea" model="mrp.bom">
+            <field name="product_tmpl_id" ref="prod_lychee_tea"/>
+            <field name="product_qty">1</field>
+            <field name="type">phantom</field>
+            <field name="bom_line_ids" eval="[
+                (0,0,{'product_id':ref('ing_cup_ice'),'product_qty':1}),
+                (0,0,{'product_id':ref('ing_lychee_based'),'product_qty':30}),
+                (0,0,{'product_id':ref('ing_mineral_water'),'product_qty':100}),
+                (0,0,{'product_id':ref('ing_lychee_fruit'),'product_qty':1}),
+            ]"/>
+        </record>
+
+        <!-- Currency Config -->
+        <!-- Currency Config: Ensure IDR is the default and formatted correctly -->
+        <record id="base.IDR" model="res.currency">
+            <field name="symbol">Rp </field>
+            <field name="position">before</field>
+            <field name="rounding">1</field>
+            <field name="decimal_places">0</field>
+            <field name="active" eval="True"/>
+        </record>
+        <record id="base.main_company" model="res.company">
+            <field name="currency_id" ref="base.IDR"/>
+        </record>
+    </data>
+</odoo>

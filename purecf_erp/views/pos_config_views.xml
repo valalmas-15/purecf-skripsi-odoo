@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- POS Config Tree View -->
+    <record id="view_pos_config_tree_purecf" model="ir.ui.view">
+        <field name="name">pos.config.tree.purecf</field>
+        <field name="model">pos.config</field>
+        <field name="priority">100</field>
+        <field name="arch" type="xml">
+            <tree string="Daftar Toko (POS)">
+                <field name="name"/>
+                <field name="x_phone"/>
+                <field name="picking_type_id"/>
+                <field name="journal_id"/>
+                <field name="active" widget="boolean_toggle"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- POS Config Form View -->
+    <record id="view_pos_config_form_purecf" model="ir.ui.view">
+        <field name="name">pos.config.form.purecf</field>
+        <field name="model">pos.config</field>
+        <field name="priority">100</field>
+        <field name="arch" type="xml">
+            <form string="Konfigurasi Toko">
+                <sheet>
+                    <field name="company_id" invisible="1"/>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1><field name="name" placeholder="Nama Toko (Contoh: Cafe Pusat)"/></h1>
+                    </div>
+                    <group>
+                        <group string="Informasi Kontak">
+                            <field name="x_address" placeholder="Alamat lengkap toko..."/>
+                            <field name="x_phone" placeholder="Nomor Telepon Toko"/>
+                        </group>
+                        <group string="Operasional">
+                            <field name="warehouse_id" required="1"/>
+                            <field name="picking_type_id"/>
+                            <field name="journal_id"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Daftar Karyawan" name="employees">
+                            <field name="x_employee_ids">
+                                <tree string="Daftar Karyawan" editable="bottom">
+                                    <field name="company_id" invisible="1"/>
+                                    <field name="name"/>
+                                    <field name="job_id"/>
+                                    <field name="work_phone"/>
+                                </tree>
+                            </field>
+                        </page>
+                        <page string="Sistem" name="system">
+                            <group>
+                                <field name="active"/>
+                                <field name="company_id" invisible="1"/>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- POS Config Search View -->
+    <record id="view_pos_config_search_purecf" model="ir.ui.view">
+        <field name="name">pos.config.search.purecf</field>
+        <field name="model">pos.config</field>
+        <field name="arch" type="xml">
+            <search string="Cari Toko">
+                <field name="name"/>
+                <field name="x_address"/>
+                <field name="x_phone"/>
+                <field name="picking_type_id"/>
+                <field name="journal_id"/>
+                <filter string="Archived" name="inactive" domain="[('active', '=', False)]"/>
+            </search>
+        </field>
+    </record>
+
+    <!-- POS Config Action -->
+    <record id="action_purecf_pos_config" model="ir.actions.act_window">
+        <field name="name">Daftar Toko</field>
+        <field name="res_model">pos.config</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_ids" eval="[(5, 0, 0),
+            (0, 0, {'view_mode': 'tree', 'view_id': ref('view_pos_config_tree_purecf')}),
+            (0, 0, {'view_mode': 'form', 'view_id': ref('view_pos_config_form_purecf')})]"/>
+        <field name="search_view_id" ref="view_pos_config_search_purecf"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Tambahkan toko baru untuk sistem POS Anda.
+            </p>
+        </field>
+    </record>
+</odoo>

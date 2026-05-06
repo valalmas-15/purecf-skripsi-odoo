@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_employee_form_inherit_purecf" model="ir.ui.view">
+        <field name="name">hr.employee.form.inherit.purecf</field>
+        <field name="model">hr.employee</field>
+        <field name="inherit_id" ref="hr.view_employee_form"/>
+        <field name="arch" type="xml">
+
+            <field name="department_id" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </field>
+            <field name="parent_id" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </field>
+            <field name="coach_id" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </field>
+
+            <xpath expr="//page[@name='public']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//page[@name='personal_information']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//page[@name='hr_settings']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <!-- <xpath expr="//page[@name='hr_resume']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath> -->
+
+            <xpath expr="//notebook" position="inside">
+                <page string="Purecf POS" name="purecf_pos">
+                    <group>
+                        <group string="Penugasan">
+                            <field name="x_pos_config_id" options="{'no_create': True}"/>
+                        </group>
+                        <group string="Akses &amp; Keamanan">
+                            <field name="x_employee_pin" password="True"/>
+                            <field name="x_can_approve_void"/>
+                        </group>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Employee Tree View Inherit -->
+    <record id="view_employee_tree_inherit_purecf" model="ir.ui.view">
+        <field name="name">hr.employee.tree.inherit.purecf</field>
+        <field name="model">hr.employee</field>
+        <field name="inherit_id" ref="hr.view_employee_tree"/>
+        <field name="arch" type="xml">
+            <field name="job_id" position="after">
+                <field name="x_pos_config_id" optional="show"/>
+            </field>
+        </field>
+    </record>
+</odoo>

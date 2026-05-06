@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_pos_session_form_inherit_purecf" model="ir.ui.view">
+        <field name="name">pos.session.form.inherit.purecf</field>
+        <field name="model">pos.session</field>
+        <field name="inherit_id" ref="point_of_sale.view_pos_session_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//sheet" position="inside">
+                <notebook>
+                    <page string="Daftar Transaksi (Orders)" name="transactions">
+                        <field name="order_ids" readonly="1">
+                            <tree string="POS Orders" create="0" delete="0">
+                                <field name="currency_id" invisible="1"/>
+                                <field name="name"/>
+                                <field name="date_order"/>
+                                <field name="user_id"/>
+                                <field name="amount_total" sum="Total" widget="monetary"/>
+                                <field name="state" widget="badge" 
+                                       decoration-info="state == 'draft'" 
+                                       decoration-success="state in ('paid', 'done', 'invoiced')"
+                                       decoration-warning="state == 'cancel'"/>
+                            </tree>
+                        </field>
+                    </page>
+                    <page string="Laporan Akhir Sesi" name="flutter_daily_report">
+                        <field name="x_flutter_daily_report" readonly="1" widget="html" nolabel="1"/>
+                    </page>
+                </notebook>
+
+            </xpath>
+        </field>
+    </record>
+</odoo>

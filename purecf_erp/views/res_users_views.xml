@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- User Form Inherit Views -->
+    <record id="res_users_form_view_inherit_purecf" model="ir.ui.view">
+        <name>res.users.form.inherit.purecf</name>
+        <model>res.users</model>
+        <inherit_id ref="base.view_users_form"/>
+        <arch type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page string="Purecf App Config" name="purecf_config">
+                    <group>
+                        <group string="Role Configuration">
+                            <field name="x_role_type"/>
+                            <field name="x_admin_pin" password="True" invisible="x_role_type != 'admin'"/>
+                            <field name="x_allowed_warehouse_id"/>
+                        </group>
+                    </group>
+                </page>
+            </xpath>
+        </arch>
+    </record>
+</odoo>

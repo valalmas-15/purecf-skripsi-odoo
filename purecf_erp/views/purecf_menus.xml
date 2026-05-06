@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Client Actions for Custom Stock Management -->
+    <record id="action_purecf_stock_in" model="ir.actions.client">
+        <field name="name">Stok Masuk (Belanja)</field>
+        <field name="tag">purecf_stock_management</field>
+        <field name="context">{'active_tab': 'stock_in'}</field>
+        <field name="target">main</field>
+    </record>
+
+    <record id="action_purecf_stock_opname" model="ir.actions.client">
+        <field name="name">Opname Fisik</field>
+        <field name="tag">purecf_stock_management</field>
+        <field name="context">{'active_tab': 'opname'}</field>
+        <field name="target">main</field>
+    </record>
+
+    <record id="action_purecf_stock_monitoring" model="ir.actions.client">
+        <field name="name">Monitoring Stok</field>
+        <field name="tag">purecf_stock_management</field>
+        <field name="context">{'active_tab': 'master_data'}</field>
+        <field name="target">main</field>
+    </record>
+
+    <record id="action_purecf_stock_history" model="ir.actions.client">
+        <field name="name">Laporan Opname</field>
+        <field name="tag">purecf_stock_management</field>
+        <field name="context">{'active_tab': 'opname_history'}</field>
+        <field name="target">main</field>
+    </record>
+
+    <!-- Main Menu -->
+    <menuitem id="menu_purecf_root"
+              name="Purecf ERP"
+              web_icon="purecf_erp,static/description/icon.png"
+              sequence="1"/>
+
+    <!-- Client Action for Custom Dashboard -->
+    <record id="action_purecf_dashboard_client" model="ir.actions.client">
+        <field name="name">Cafe Dashboard</field>
+        <field name="tag">purecf_dashboard</field>
+        <field name="target">main</field>
+    </record>
+
+    <!-- Dashboard Menu -->
+    <menuitem id="menu_purecf_dashboard"
+              name="Dashboard"
+              parent="menu_purecf_root"
+              action="action_purecf_dashboard_client"
+              groups="purecf_erp.group_purecf_owner"
+              sequence="10"/>
+
+    <!-- Stok (Custom) -->
+    <menuitem id="menu_purecf_stock_root"
+              name="Stok"
+              parent="menu_purecf_root"
+              sequence="30"/>
+
+    <menuitem id="menu_purecf_stock_monitoring"
+              name="Monitoring Stok"
+              parent="menu_purecf_stock_root"
+              action="action_purecf_stock_monitoring"
+              sequence="10"/>
+
+    <menuitem id="menu_purecf_stock_in"
+              name="Stok Masuk"
+              parent="menu_purecf_stock_root"
+              action="action_purecf_stock_in"
+              sequence="20"/>
+
+    <menuitem id="menu_purecf_stock_opname"
+              name="Opname Fisik"
+              parent="menu_purecf_stock_root"
+              action="action_purecf_stock_opname"
+              sequence="30"/>
+
+    <menuitem id="menu_purecf_stock_history"
+              name="Laporan Opname"
+              parent="menu_purecf_stock_root"
+              action="action_purecf_stock_history"
+              sequence="40"/>
+
+    <menuitem id="menu_purecf_stock_usage_analysis"
+              name="Analisis Penggunaan"
+              parent="menu_purecf_stock_root"
+              action="action_purecf_stock_usage_analysis"
+              sequence="50"/>
+
+    <menuitem id="menu_purecf_finance"
+              name="Finance"
+              parent="menu_purecf_root"
+              groups="purecf_erp.group_purecf_owner"
+              sequence="50"/>
+
+    <menuitem id="menu_purecf_finance_transactions"
+              name="Transaksi"  
+              parent="menu_purecf_finance"
+              action="point_of_sale.action_pos_session"
+              sequence="10"/>
+
+    <menuitem id="menu_purecf_finance_reports"
+              name="Laporan Bulanan"
+              parent="menu_purecf_finance"
+              action="action_purecf_finance_reports"
+              sequence="20"/>
+
+    <menuitem id="menu_purecf_finance_expenses"
+              name="Biaya Operasional"
+              parent="menu_purecf_finance"
+              action="action_purecf_expenses"
+              sequence="30"/>
+
+    <menuitem id="menu_purecf_finance_bills"
+              name="Pembelian Stok (Bills)"
+              parent="menu_purecf_finance"
+              action="account.action_move_in_invoice_type"
+              sequence="40"/>
+
+    <menuitem id="menu_purecf_finance_cash"
+              name="Buku Kas &amp; Bank"
+              parent="menu_purecf_finance"
+              action="account.action_account_payments"
+              sequence="50"/>
+
+    <menuitem id="menu_purecf_products"
+              name="Products"
+              parent="menu_purecf_root"
+              action="product.product_template_action"
+              sequence="50"/>
+
+    <menuitem id="menu_purecf_employee"
+              name="Employees"
+              parent="menu_purecf_root"
+              action="hr.open_view_employee_list_my"
+              sequence="65"/>
+
+    <menuitem id="menu_purecf_pos_config"
+              name="Daftar Toko"
+              parent="menu_purecf_root"
+              action="action_purecf_pos_config"
+              sequence="70"/>
+
+    <!-- Configuration Menu -->
+    <menuitem id="menu_purecf_config_root"
+              name="Configuration"
+              parent="menu_purecf_root"
+              groups="purecf_erp.group_purecf_owner"
+              sequence="100"/>
+
+    <menuitem id="menu_purecf_settings"
+              name="Settings"
+              parent="menu_purecf_config_root"
+              action="action_purecf_config_settings"
+              groups="purecf_erp.group_purecf_owner"
+              sequence="10"/>
+
+    <menuitem id="menu_purecf_uom"
+              name="Units of Measure"
+              parent="menu_purecf_config_root"
+              action="uom.product_uom_form_action"
+              groups="uom.group_uom"
+              sequence="20"/>
+
+    <menuitem id="menu_purecf_uom_categ"
+              name="UoM Categories"
+              parent="menu_purecf_config_root"
+              action="uom.product_uom_categ_form_action"
+              groups="uom.group_uom"
+              sequence="30"/>
+
+</odoo>

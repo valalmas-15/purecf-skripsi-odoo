@@ -1,0 +1,99 @@
+.purecf-master-container {
+    display: flex;
+    background-color: #f0f2f5;
+    min-height: 100vh;
+    font-family: 'Inter', -apple-system, sans-serif;
+
+    /* Sidebar Navigation (Reused from Dashboard) */
+    .master-sidebar {
+        width: 260px;
+        background: #1e293b;
+        color: white;
+        padding: 2rem 1rem;
+        display: flex;
+        flex-direction: column;
+
+        .sidebar-brand {
+            font-size: 1.5rem;
+            font-weight: 800;
+            margin-bottom: 2.5rem;
+            padding-left: 1rem;
+            color: #714B67;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            padding: 0.8rem 1.2rem;
+            margin-bottom: 0.5rem;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            color: #94a3b8;
+            font-weight: 600;
+
+            i { margin-right: 1rem; width: 20px; text-align: center; }
+
+            &:hover {
+                background: rgba(255, 255, 255, 0.05);
+                color: white;
+            }
+
+            &.active {
+                background: #714B67;
+                color: white;
+                box-shadow: 0 4px 12px rgba(113, 75, 103, 0.3);
+            }
+        }
+    }
+
+    /* Main Content Area */
+    .master-main {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem;
+
+        .hub-welcome {
+            text-align: center;
+            max-width: 600px;
+            
+            .welcome-icon {
+                font-size: 4rem;
+                color: #714B67;
+                margin-bottom: 1.5rem;
+                opacity: 0.8;
+            }
+
+            h1 { font-weight: 800; color: #0f172a; margin-bottom: 1rem; }
+            p { color: #64748b; font-size: 1.1rem; margin-bottom: 3rem; }
+        }
+
+        .quick-stats-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 24px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: 1px solid transparent;
+
+            i { font-size: 2rem; color: #714B67; margin-bottom: 1rem; }
+            .stat-label { font-weight: 800; color: #1e293b; font-size: 1.2rem; }
+            .stat-desc { color: #94a3b8; font-size: 0.9rem; margin-top: 0.5rem; }
+
+            &:hover {
+                transform: translateY(-5px);
+                border-color: #714B67;
+                box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            }
+        }
+    }
+}

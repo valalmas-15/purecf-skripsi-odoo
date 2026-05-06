@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="utf-8"?>
+<templates xml:space="preserve">
+    <t t-name="purecf_erp.StockManagement" owl="1">
+        <div class="o_purecf_stock_management">
+            <div class="header">
+                <div class="header-top">
+                    <h1>Inventory &amp; BoM</h1>
+                    <i class="fa fa-refresh" style="cursor:pointer;" t-on-click="_fetchIngredients"></i>
+                </div>
+                <div class="tabs">
+                    <div class="tab" t-att-class="{active: state.activeTab === 'stock_in'}" t-on-click="() => this.setActiveTab('stock_in')">Stock In</div>
+                    <div class="tab" t-att-class="{active: state.activeTab === 'opname'}" t-on-click="() => this.setActiveTab('opname')">Opname</div>
+                    <div class="tab" t-att-class="{active: state.activeTab === 'master_data'}" t-on-click="() => this.setActiveTab('master_data')">Master Data</div>
+                </div>
+            </div>
+
+            <div class="content">
+                <!-- Stock In Tab -->
+                <div t-if="state.activeTab === 'stock_in'">
+                    <div class="card">
+                        <div class="section-title">Input Stok Masuk (Belanja)</div>
+                        <div class="form-group">
+                            <label>Cari &amp; Pilih Bahan Baku</label>
+                            <select id="material-select">
+                                <option value="">Pilih Bahan Baku...</option>
+                                <t t-foreach="state.ingredients" t-as="ing" t-key="ing.id">
+                                    <option t-att-value="ing.id">
+                                        <t t-esc="ing.name"/> (<t t-esc="ing.uom_id[1]"/>)
+                                    </option>
+                                </t>
+                            </select>
+                        </div>
+                        <div class="row-flex">
+                            <div class="form-group flex-1">
+                                <label>Jumlah</label>
+                                <input type="number" id="input-qty" placeholder="0"/>
+                            </div>
+                            <div class="form-group flex-1">
+                                <label>Harga Total</label>
+                                <div class="price-input-container">
+                                    <span class="currency-label">Rp</span>
+                                    <input type="number" id="input-price" class="price-input" placeholder="0"/>
+                                </div>
+                            </div>
+                        </div>
+                        <button class="btn btn-primary" t-on-click="addToCart">Tambah ke Daftar</button>
+                    </div>
+
+                    <div class="item-list">
+                        <t t-foreach="state.cart" t-as="item" t-key="item_index">
+                            <div class="item-card">
+                                <div class="item-info">
+                                    <h4><t t-esc="item.name"/></h4>
+                                    <p><t t-esc="item.quantity"/> <t t-esc="item.uom"/> — Rp <t t-esc="item.price.toLocaleString()"/></p>
+                                </div>
+                                <i class="fa fa-trash remove-btn" t-on-click="() => this.removeFromCart(item_index)"></i>
+                            </div>
+                        </t>
+                    </div>
+
+                    <div t-if="state.cart.length > 0">
+                        <button class="btn btn-success" t-on-click="saveStock">SIMPAN &amp; KIRIM KE ODOO</button>
+                    </div>
+                </div>
+
+                <!-- Opname Tab -->
+                <div t-if="state.activeTab === 'opname'">
+                    <div class="search-container">
+                        <i class="fa fa-search"></i>
+                        <input type="text" t-model="state.opnameSearch" placeholder="Cari bahan baku untuk opname..."/>
+                    </div>
+                    <div class="opname-list">
+                        <t t-foreach="filteredOpname" t-as="ing" t-key="ing.id">
+                            <div class="card opname-card">
+                                <div class="item-info">
+                                    <div class="title-row">
+                                        <h4><t t-esc="ing.name"/></h4>
+                                        <span class="badge badge-orange">BELUM OPNAME</span>
+                                    </div>
+                                    <p>Stok Sistem: <t t-esc="ing.qty_available"/> <t t-esc="ing.uom_id[1]"/></p>
+                                </div>
+                                <button class="btn btn-primary btn-auto" t-on-click="() => this.openOpnameDialog(ing)">
+                                    Input Opname
+                                </button>
+                            </div>
+                        </t>
+                    </div>
+                </div>
+
+                <!-- Master Data Tab -->
+                <div t-if="state.activeTab === 'master_data'">
+                    <div class="search-container">
+                        <i class="fa fa-search"></i>
+                        <input type="text" t-model="state.masterSearch" placeholder="Cari di Master Data..."/>
+                    </div>
+                    <div class="filter-chips">
+                        <div class="chip" t-att-class="{active: state.masterFilter === 'all'}" t-on-click="() => this.state.masterFilter = 'all'">Semua</div>
+                        <div class="chip" t-att-class="{active: state.masterFilter === 'emergency'}" t-on-click="() => this.state.masterFilter = 'emergency'">Darurat</div>
+                        <div class="chip" t-att-class="{active: state.masterFilter === 'warning'}" t-on-click="() => this.state.masterFilter = 'warning'">Warning</div>
+                        <div class="chip" t-att-class="{active: state.masterFilter === 'safe'}" t-on-click="() => this.state.masterFilter = 'safe'">Aman</div>
+                    </div>
+                    <div class="master-list">
+                        <t t-foreach="filteredMaster" t-as="ing" t-key="ing.id">
+                            <t t-set="is_low" t-value="ing.qty_available &lt;= ing.x_min_qty"/>
+                            <t t-set="is_warning" t-value="!is_low and ing.qty_available &lt;= (ing.x_min_qty * 1.2)"/>
+                            
+                            <div class="card master-item">
+                                <div class="master-header">
+                                    <div class="icon-container">
+                                        <i class="fa fa-archive" t-att-style="'color:' + (is_low ? '#c5221f' : (is_warning ? '#e65100' : '#1e7e34'))"></i>
+                                    </div>
+                                    <div class="master-info">
+                                        <div class="title-edit">
+                                            <h4><t t-esc="ing.name"/></h4>
+                                            <i class="fa fa-pencil edit-icon" t-on-click="() => this.editMinQty(ing)"></i>
+                                        </div>
+                                        <p class="min-qty-text">
+                                            Stok Minimum: <t t-esc="ing.x_min_qty"/> <t t-esc="ing.uom_id[1]"/>
+                                        </p>
+                                    </div>
+                                </div>
+                                <div class="progress-container">
+                                    <div class="progress-bar" t-att-style="'width:' + Math.min(100, (ing.qty_available / (ing.x_min_qty * 2 || 100)) * 100) + '%; background-color:' + (is_low ? '#c5221f' : (is_warning ? '#e65100' : '#1e7e34'))"></div>
+                                </div>
+                                <div class="status-footer">
+                                    <span t-att-class="'badge ' + (is_low ? 'badge-red' : (is_warning ? 'badge-orange' : 'badge-green'))">
+                                        <t t-if="is_low">DARURAT</t>
+                                        <t t-elif="is_warning">WARNING</t>
+                                        <t t-else="">AMAN</t>
+                                    </span>
+                                    <span class="current-qty"><t t-esc="ing.qty_available"/> <t t-esc="ing.uom_id[1]"/></span>
+                                </div>
+                            </div>
+                        </t>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dialog -->
+            <div t-if="state.dialog.show" class="dialog-overlay">
+                <div class="card dialog-card">
+                    <h3>Opname: <t t-esc="state.dialog.name"/></h3>
+                    <div class="form-group">
+                        <label>Stok Fisik Aktual</label>
+                        <div class="dialog-input-row">
+                            <input type="number" t-model="state.dialog.qty" placeholder="0"/>
+                            <span><t t-esc="state.dialog.uom"/></span>
+                        </div>
+                    </div>
+                    <div class="dialog-actions">
+                        <button class="btn btn-cancel" t-on-click="closeDialog">Batal</button>
+                        <button class="btn btn-primary" t-on-click="confirmOpname">Simpan</button>
+                    </div>
+                </div>
+            </div>
+
+            <div t-if="state.loading" class="loading-overlay">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+            </div>
+        </div>
+    </t>
+</templates>

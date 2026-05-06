@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- RECORD RULES FOR KASIR -->
+        <!-- Restrict all web menus for Kasir (Effectively preventing web usage) -->
+        <record id="rule_kasir_no_web_menu" model="ir.rule">
+            <field name="name">Kasir: No Web Menu Access</field>
+            <field name="model_id" ref="base.model_ir_ui_menu"/>
+            <field name="groups" eval="[(4, ref('purecf_erp.group_purecf_kasir'))]"/>
+            <field name="domain_force">[('id', '=', 0)]</field>
+        </record>
+
+        <!-- RECORD RULES FOR SUPERVISOR -->
+        
+        <record id="rule_supervisor_menu_access" model="ir.rule">
+            <field name="name">Supervisor: Limited Menu Access</field>
+            <field name="model_id" ref="base.model_ir_ui_menu"/>
+            <field name="groups" eval="[(4, ref('purecf_erp.group_purecf_supervisor'))]"/>
+            <field name="domain_force" eval="'[\'|\', \'|\', \'|\', (\'id\', \'child_of\', ' + str(ref('purecf_erp.menu_purecf_stock_root')) + '), (\'id\', \'child_of\', ' + str(ref('purecf_erp.menu_purecf_employee')) + '), (\'id\', \'=\', ' + str(ref('purecf_erp.menu_purecf_dashboard')) + '), (\'id\', \'=\', ' + str(ref('purecf_erp.menu_purecf_root')) + ')]'"/>
+        </record>
+
+        <!-- 2. Employee Access: Only Same Branch -->
+        <record id="rule_supervisor_employee_branch" model="ir.rule">
+            <field name="name">Supervisor: Employees of Same Branch Only</field>
+            <field name="model_id" ref="hr.model_hr_employee"/>
+            <field name="groups" eval="[(4, ref('purecf_erp.group_purecf_supervisor'))]"/>
+            <field name="domain_force">[('x_pos_config_id', '=', user.employee_id.x_pos_config_id.id)]</field>
+        </record>
+
+        <!-- 3. Stock Access: Stock Quants of Same Branch Warehouse -->
+        <record id="rule_supervisor_stock_branch" model="ir.rule">
+            <field name="name">Supervisor: Stock of Same Branch Only</field>
+            <field name="model_id" ref="stock.model_stock_quant"/>
+            <field name="groups" eval="[(4, ref('purecf_erp.group_purecf_supervisor'))]"/>
+            <field name="domain_force">[('location_id.warehouse_id', '=', user.employee_id.x_pos_config_id.picking_type_id.warehouse_id.id)]</field>
+        </record>
+
+        <!-- 4. Opname History: Only Same Branch -->
+        <record id="rule_supervisor_opname_branch" model="ir.rule">
+            <field name="name">Supervisor: Opname History of Same Branch Only</field>
+            <field name="model_id" ref="purecf_erp.model_purecf_stock_opname"/>
+            <field name="groups" eval="[(4, ref('purecf_erp.group_purecf_supervisor'))]"/>
+            <field name="domain_force">[('admin_id.employee_id.x_pos_config_id', '=', user.employee_id.x_pos_config_id.id)]</field>
+        </record>
+
+        <!-- 5. Audit Log: Only Same Branch -->
+        <record id="rule_supervisor_audit_log_branch" model="ir.rule">
+            <field name="name">Supervisor: Audit Logs of Same Branch Only</field>
+            <field name="model_id" ref="purecf_erp.model_purecf_audit_log"/>
+            <field name="groups" eval="[(4, ref('purecf_erp.group_purecf_supervisor'))]"/>
+            <field name="domain_force">[('admin_id.employee_id.x_pos_config_id', '=', user.employee_id.x_pos_config_id.id)]</field>
+        </record>
+
+    </data>
+</odoo>

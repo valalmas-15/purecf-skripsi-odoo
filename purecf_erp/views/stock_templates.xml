@@ -1,0 +1,619 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="stock_management_page" name="Purecf Stock Management">
+        <t t-call="web.layout">
+            <t t-set="title">Purecf Stock &amp; Inventory</t>
+            <t t-set="head">
+                <meta name="viewport" content="width=device-width, initial-scale=1"/>
+                <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap"/>
+                <style>
+                    :root {
+                        --primary-amber: #D4A373;
+                        --deep-charcoal: #1C1C1C;
+                        --soft-cream: #FAF9F6;
+                        --deep-navy: #1B1B2F;
+                        --success-green: #1D976C;
+                        --error-red: #E76F51;
+                    }
+                    body {
+                        font-family: 'Inter', sans-serif;
+                        background-color: var(--soft-cream);
+                        color: var(--deep-navy);
+                        margin: 0;
+                        padding: 0;
+                    }
+                    .header {
+                        background-color: var(--deep-charcoal);
+                        color: white;
+                        padding: 1rem 1.5rem;
+                        display: flex;
+                        flex-direction: column;
+                        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+                        position: sticky;
+                        top: 0;
+                        z-index: 100;
+                    }
+                    .header-top {
+                        display: flex;
+                        justify-content: space-between;
+                        align-items: center;
+                    }
+                    .header h1 {
+                        margin: 0;
+                        font-size: 1.25rem;
+                        font-weight: 700;
+                    }
+                    .tabs {
+                        display: flex;
+                        margin-top: 1rem;
+                        gap: 1.5rem;
+                    }
+                    .tab {
+                        padding: 0.5rem 0;
+                        color: rgba(255,255,255,0.6);
+                        cursor: pointer;
+                        font-weight: 600;
+                        font-size: 0.9rem;
+                        position: relative;
+                        transition: color 0.3s;
+                    }
+                    .tab.active {
+                        color: white;
+                    }
+                    .tab.active::after {
+                        content: '';
+                        position: absolute;
+                        bottom: -2px;
+                        left: 0;
+                        right: 0;
+                        height: 3px;
+                        background-color: var(--primary-amber);
+                        border-radius: 2px;
+                    }
+                    .content {
+                        padding: 1.5rem;
+                        max-width: 800px;
+                        margin: 0 auto;
+                    }
+                    .card {
+                        background: white;
+                        border-radius: 16px;
+                        border: 1px solid #eee;
+                        padding: 1.5rem;
+                        margin-bottom: 1.5rem;
+                    }
+                    .section-title {
+                        font-weight: 700;
+                        font-size: 1rem;
+                        margin-bottom: 1.25rem;
+                        color: var(--deep-navy);
+                    }
+                    .form-group {
+                        margin-bottom: 1rem;
+                    }
+                    .form-group label {
+                        display: block;
+                        font-size: 0.8rem;
+                        font-weight: 600;
+                        color: #666;
+                        margin-bottom: 0.4rem;
+                    }
+                    input, select {
+                        width: 100%;
+                        padding: 0.75rem;
+                        border-radius: 12px;
+                        border: 1px solid #ddd;
+                        background-color: #f9f9f9;
+                        font-size: 0.95rem;
+                        outline: none;
+                        transition: border-color 0.2s;
+                    }
+                    input:focus {
+                        border-color: var(--primary-amber);
+                    }
+                    .btn {
+                        padding: 0.75rem 1.5rem;
+                        border-radius: 12px;
+                        font-weight: 700;
+                        cursor: pointer;
+                        border: none;
+                        text-align: center;
+                        transition: opacity 0.2s;
+                    }
+                    .btn-primary {
+                        background-color: var(--deep-navy);
+                        color: white;
+                        width: 100%;
+                    }
+                    .btn-success {
+                        background-color: var(--success-green);
+                        color: white;
+                        width: 100%;
+                        font-size: 1rem;
+                        padding: 1rem;
+                    }
+                    .btn:disabled {
+                        opacity: 0.5;
+                        cursor: not-allowed;
+                    }
+                    .item-list {
+                        margin-top: 1rem;
+                    }
+                    .item-card {
+                        display: flex;
+                        justify-content: space-between;
+                        align-items: center;
+                        padding: 1rem;
+                        background: white;
+                        border-radius: 12px;
+                        border: 1px solid #f0f0f0;
+                        margin-bottom: 0.75rem;
+                    }
+                    .item-info h4 {
+                        margin: 0;
+                        font-size: 0.95rem;
+                        font-weight: 700;
+                    }
+                    .item-info p {
+                        margin: 0.25rem 0 0;
+                        font-size: 0.8rem;
+                        color: #666;
+                    }
+                    .remove-btn {
+                        color: var(--error-red);
+                        cursor: pointer;
+                        font-size: 1.25rem;
+                    }
+                    .hidden {
+                        display: none !important;
+                    }
+                    /* Opname Styles */
+                    .opname-card {
+                        display: flex;
+                        justify-content: space-between;
+                        align-items: center;
+                        padding: 1.25rem;
+                    }
+                    .badge {
+                        padding: 0.25rem 0.5rem;
+                        border-radius: 6px;
+                        font-size: 0.65rem;
+                        font-weight: 800;
+                        text-transform: uppercase;
+                    }
+                    .badge-green { background: #e6f4ea; color: #1e7e34; }
+                    .badge-orange { background: #fff3e0; color: #e65100; }
+                    .badge-red { background: #fce8e6; color: #c5221f; }
+                    
+                    /* Search Bar */
+                    .search-container {
+                        margin-bottom: 1rem;
+                        position: relative;
+                    }
+                    .search-container i {
+                        position: absolute;
+                        left: 1rem;
+                        top: 50%;
+                        transform: translateY(-50%);
+                        color: #999;
+                    }
+                    .search-container input {
+                        padding-left: 2.75rem;
+                    }
+
+                    /* Filter Chips */
+                    .filter-chips {
+                        display: flex;
+                        gap: 0.5rem;
+                        overflow-x: auto;
+                        padding-bottom: 0.5rem;
+                        margin-bottom: 1rem;
+                    }
+                    .chip {
+                        padding: 0.4rem 1rem;
+                        background: white;
+                        border: 1px solid #ddd;
+                        border-radius: 20px;
+                        font-size: 0.8rem;
+                        white-space: nowrap;
+                        cursor: pointer;
+                    }
+                    .chip.active {
+                        background: var(--deep-navy);
+                        color: white;
+                        border-color: var(--deep-navy);
+                    }
+
+                    /* Progress Bar for Master Data */
+                    .progress-container {
+                        height: 6px;
+                        background: #eee;
+                        border-radius: 3px;
+                        margin-top: 1rem;
+                        overflow: hidden;
+                    }
+                    .progress-bar {
+                        height: 100%;
+                        width: 0%;
+                        transition: width 0.3s;
+                    }
+                </style>
+            </t>
+            <div class="header">
+                <div class="header-top">
+                    <h1>Inventory &amp; BoM</h1>
+                    <i class="fa fa-refresh" style="cursor:pointer;" onclick="location.reload()"></i>
+                </div>
+                <div class="tabs">
+                    <div class="tab active" data-tab="stock-in">Stock In</div>
+                    <div class="tab" data-tab="opname">Opname</div>
+                    <div class="tab" data-tab="master-data">Master Data</div>
+                </div>
+            </div>
+
+            <div class="content">
+                <!-- Stock In Tab -->
+                <div id="stock-in-view">
+                    <div class="card">
+                        <div class="section-title">Input Stok Masuk (Belanja)</div>
+                        <div class="form-group">
+                            <label>Cari &amp; Pilih Bahan Baku</label>
+                            <select id="material-select">
+                                <option value="">Pilih Bahan Baku...</option>
+                                <t t-foreach="ingredients" t-as="ing">
+                                    <option t-att-value="ing['id']" 
+                                            t-att-data-name="ing['name']"
+                                            t-att-data-uom="ing['uom']"
+                                            t-att-data-qty="ing['qty_available']"
+                                            t-att-data-price="ing['list_price']">
+                                        <t t-esc="ing['name']"/> (<t t-esc="ing['uom']"/>)
+                                    </option>
+                                </t>
+                            </select>
+                        </div>
+                        <div style="display:flex; gap: 1rem;">
+                            <div class="form-group" style="flex:1">
+                                <label>Jumlah</label>
+                                <input type="number" id="input-qty" placeholder="0"/>
+                            </div>
+                            <div class="form-group" style="flex:1">
+                                <label>Harga Total</label>
+                                <div style="position:relative">
+                                    <span style="position:absolute; left: 1rem; top: 0.75rem; color: #666">Rp</span>
+                                    <input type="number" id="input-price" style="padding-left: 2.75rem;" placeholder="0"/>
+                                </div>
+                            </div>
+                        </div>
+                        <button class="btn btn-primary" id="add-item-btn">Tambah ke Daftar</button>
+                    </div>
+
+                    <div id="cart-items" class="item-list">
+                        <!-- Items added will appear here -->
+                    </div>
+
+                    <div id="save-container" class="hidden">
+                        <button class="btn btn-success" id="save-stock-btn">SIMPAN &amp; KIRIM KE ODOO</button>
+                    </div>
+                </div>
+
+                <!-- Opname Tab -->
+                <div id="opname-view" class="hidden">
+                    <div class="search-container">
+                        <i class="fa fa-search"></i>
+                        <input type="text" id="opname-search" placeholder="Cari bahan baku untuk opname..."/>
+                    </div>
+                    <div id="opname-list">
+                        <t t-foreach="ingredients" t-as="ing">
+                            <div class="card opname-card" t-att-data-name="ing['name'].lower()">
+                                <div class="item-info">
+                                    <div style="display:flex; align-items:center; gap: 0.5rem">
+                                        <h4><t t-esc="ing['name']"/></h4>
+                                        <span class="badge badge-orange">BELUM OPNAME</span>
+                                    </div>
+                                    <p>Stok Sistem: <t t-esc="ing['qty_available']"/> <t t-esc="ing['uom']"/></p>
+                                </div>
+                                <button class="btn btn-primary" style="width: auto; padding: 0.5rem 1rem;" 
+                                        t-att-onclick="'openOpnameDialog(' + str(ing['id']) + ', \'' + ing['name'] + '\', \'' + ing['uom'] + '\')'">
+                                    Input Opname
+                                </button>
+                            </div>
+                        </t>
+                    </div>
+                </div>
+
+                <!-- Master Data Tab -->
+                <div id="master-data-view" class="hidden">
+                    <div class="search-container">
+                        <i class="fa fa-search"></i>
+                        <input type="text" id="master-search" placeholder="Cari di Master Data..."/>
+                    </div>
+                    <div class="filter-chips">
+                        <div class="chip active" data-filter="all">Semua</div>
+                        <div class="chip" data-filter="emergency">Darurat</div>
+                        <div class="chip" data-filter="warning">Warning</div>
+                        <div class="chip" data-filter="safe">Aman</div>
+                    </div>
+                    <div id="master-list">
+                        <t t-foreach="ingredients" t-as="ing">
+                            <t t-set="is_low" t-value="ing['qty_available'] &lt;= ing['min_qty']"/>
+                            <t t-set="is_warning" t-value="not is_low and ing['qty_available'] &lt;= (ing['min_qty'] * 1.2)"/>
+                            <t t-set="status_class" t-value="'badge-red' if is_low else ('badge-orange' if is_warning else 'badge-green')"/>
+                            <t t-set="status_text" t-value="'DARURAT' if is_low else ('WARNING' if is_warning else 'AMAN')"/>
+                            
+                            <div class="card master-item" t-att-data-name="ing['name'].lower()" t-att-data-status="'emergency' if is_low else ('warning' if is_warning else 'safe')">
+                                <div style="display:flex; gap: 1rem; align-items: flex-start;">
+                                    <div style="padding: 0.75rem; border-radius: 12px; background: #f0f0f0;">
+                                        <i class="fa fa-archive" t-att-style="'color:' + ('#c5221f' if is_low else ('#e65100' if is_warning else '#1e7e34'))"></i>
+                                    </div>
+                                    <div style="flex:1">
+                                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                                            <h4 style="margin:0"><t t-esc="ing['name']"/></h4>
+                                            <i class="fa fa-pencil" style="color:#999; cursor:pointer;" t-att-onclick="'editMinQty(' + str(ing['id']) + ', ' + str(ing['min_qty']) + ')'"></i>
+                                        </div>
+                                        <p style="margin: 0.25rem 0; font-size: 0.8rem; color: #666;">
+                                            Stok Minimum: <t t-esc="ing['min_qty']"/> <t t-esc="ing['uom']"/>
+                                        </p>
+                                    </div>
+                                </div>
+                                <div class="progress-container">
+                                    <div class="progress-bar" t-att-style="'width:' + str(min(100, (ing['qty_available'] / (ing['min_qty'] * 2 or 100)) * 100)) + '%; background-color:' + ('#c5221f' if is_low else ('#e65100' if is_warning else '#1e7e34'))"></div>
+                                </div>
+                                <div style="display:flex; justify-content:space-between; align-items:center; margin-top: 0.5rem;">
+                                    <span t-att-class="'badge ' + status_class"><t t-esc="status_text"/></span>
+                                    <span style="font-weight:700; font-size: 0.9rem;"><t t-esc="ing['qty_available']"/> <t t-esc="ing['uom']"/></span>
+                                </div>
+                            </div>
+                        </t>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Simple Dialog for Opname -->
+            <div id="opname-dialog" class="hidden" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:1000; display:flex; align-items:center; justify-content:center;">
+                <div class="card" style="width: 90%; max-width: 400px; margin-bottom:0;">
+                    <h3 id="dialog-title" style="margin-top:0">Opname</h3>
+                    <div class="form-group">
+                        <label>Stok Fisik Aktual</label>
+                        <div style="display:flex; align-items:center; gap:0.5rem">
+                            <input type="number" id="dialog-qty" placeholder="0"/>
+                            <span id="dialog-uom"></span>
+                        </div>
+                    </div>
+                    <div style="display:flex; gap: 1rem; margin-top: 1.5rem;">
+                        <button class="btn btn-primary" style="background:#eee; color:#333;" onclick="closeDialog()">Batal</button>
+                        <button class="btn btn-primary" id="confirm-opname-btn">Simpan</button>
+                    </div>
+                </div>
+            </div>
+
+            <script type="text/javascript">
+                let cart = [];
+                let currentOpnameId = null;
+
+                // Tab Switching
+                document.querySelectorAll('.tab').forEach(tab => {
+                    tab.addEventListener('click', () => {
+                        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                        tab.classList.add('active');
+                        
+                        const target = tab.dataset.tab;
+                        document.getElementById('stock-in-view').classList.add('hidden');
+                        document.getElementById('opname-view').classList.add('hidden');
+                        document.getElementById('master-data-view').classList.add('hidden');
+                        
+                        document.getElementById(target + '-view').classList.remove('hidden');
+                    });
+                });
+
+                // Stock In Logic
+                document.getElementById('add-item-btn').addEventListener('click', () => {
+                    const select = document.getElementById('material-select');
+                    const qtyInput = document.getElementById('input-qty');
+                    const priceInput = document.getElementById('input-price');
+                    
+                    if (!select.value || !qtyInput.value) return;
+                    
+                    const option = select.options[select.selectedIndex];
+                    const item = {
+                        product_id: parseInt(select.value),
+                        name: option.dataset.name,
+                        uom: option.dataset.uom,
+                        quantity: parseFloat(qtyInput.value),
+                        price: parseFloat(priceInput.value || 0)
+                    };
+                    
+                    cart.push(item);
+                    renderCart();
+                    
+                    // Reset
+                    select.value = "";
+                    qtyInput.value = "";
+                    priceInput.value = "";
+                });
+
+                function renderCart() {
+                    const container = document.getElementById('cart-items');
+                    const saveBtn = document.getElementById('save-container');
+                    
+                    container.innerHTML = '';
+                    cart.forEach((item, index) => {
+                        const div = document.createElement('div');
+                        div.className = 'item-card';
+                        div.innerHTML = `
+                            <div class="item-info">
+                                <h4>${item.name}</h4>
+                                <p>${item.quantity} ${item.uom} — Rp ${item.price.toLocaleString()}</p>
+                            </div>
+                            <i class="fa fa-trash remove-btn" onclick="removeItem(${index})"></i>
+                        `;
+                        container.appendChild(div);
+                    });
+                    
+                    if (cart.length > 0) {
+                        saveBtn.classList.remove('hidden');
+                    } else {
+                        saveBtn.classList.add('hidden');
+                    }
+                }
+
+                function removeItem(index) {
+                    cart.splice(index, 1);
+                    renderCart();
+                }
+
+                document.getElementById('save-stock-btn').addEventListener('click', async () => {
+                    const btn = document.getElementById('save-stock-btn');
+                    btn.disabled = true;
+                    btn.innerText = 'MEMPROSES...';
+                    
+                    try {
+                        const response = await fetch('/api/purecf/stock/incoming', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                jsonrpc: "2.0",
+                                params: { items: cart }
+                            })
+                        });
+                        const result = await response.json();
+                        if (result.result &amp;&amp; result.result.status === 'success') {
+                            alert('Stok Berhasil Disimpan');
+                            cart = [];
+                            renderCart();
+                            location.reload();
+                        } else {
+                            alert('Gagal menyimpan stok: ' + (result.error ? result.error.message : 'Unknown error'));
+                        }
+                    } catch (e) {
+                        alert('Error: ' + e.message);
+                    } finally {
+                        btn.disabled = false;
+                        btn.innerText = 'SIMPAN &amp; KIRIM KE ODOO';
+                    }
+                });
+
+                // Opname Logic
+                function openOpnameDialog(id, name, uom) {
+                    currentOpnameId = id;
+                    document.getElementById('dialog-title').innerText = 'Opname: ' + name;
+                    document.getElementById('dialog-uom').innerText = uom;
+                    document.getElementById('dialog-qty').value = '';
+                    document.getElementById('opname-dialog').classList.remove('hidden');
+                    document.getElementById('opname-dialog').style.display = 'flex';
+                }
+
+                function closeDialog() {
+                    document.getElementById('opname-dialog').classList.add('hidden');
+                    document.getElementById('opname-dialog').style.display = 'none';
+                }
+
+                document.getElementById('confirm-opname-btn').addEventListener('click', async () => {
+                    const qty = document.getElementById('dialog-qty').value;
+                    if (qty === '') return;
+                    
+                    const btn = document.getElementById('confirm-opname-btn');
+                    btn.disabled = true;
+                    
+                    try {
+                        const response = await fetch('/api/purecf/update_stock', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                jsonrpc: "2.0",
+                                params: { 
+                                    product_id: currentOpnameId,
+                                    new_quantity: parseFloat(qty)
+                                }
+                            })
+                        });
+                        const result = await response.json();
+                        if (result.result &amp;&amp; result.result.status === 'success') {
+                            closeDialog();
+                            location.reload();
+                        } else {
+                            alert('Gagal update stok: ' + (result.result ? result.result.message : 'Error'));
+                        }
+                    } catch (e) {
+                        alert('Error: ' + e.message);
+                    } finally {
+                        btn.disabled = false;
+                    }
+                });
+
+                // Search Logic
+                document.getElementById('opname-search').addEventListener('input', (e) => {
+                    const query = e.target.value.toLowerCase();
+                    document.querySelectorAll('#opname-list .opname-card').forEach(card => {
+                        const name = card.dataset.name;
+                        if (name.includes(query)) {
+                            card.classList.remove('hidden');
+                        } else {
+                            card.classList.add('hidden');
+                        }
+                    });
+                });
+
+                document.getElementById('master-search').addEventListener('input', (e) => {
+                    filterMaster();
+                });
+
+                document.querySelectorAll('.chip').forEach(chip => {
+                    chip.addEventListener('click', () => {
+                        document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+                        chip.classList.add('active');
+                        filterMaster();
+                    });
+                });
+
+                function filterMaster() {
+                    const query = document.getElementById('master-search').value.toLowerCase();
+                    const activeFilter = document.querySelector('.chip.active').dataset.filter;
+                    
+                    document.querySelectorAll('#master-list .master-item').forEach(card => {
+                        const name = card.dataset.name;
+                        const status = card.dataset.status;
+                        
+                        const matchesSearch = name.includes(query);
+                        const matchesFilter = activeFilter === 'all' || status === activeFilter;
+                        
+                        if (matchesSearch &amp;&amp; matchesFilter) {
+                            card.classList.remove('hidden');
+                        } else {
+                            card.classList.add('hidden');
+                        }
+                    });
+                }
+
+                // Edit Min Qty
+                function editMinQty(id, current) {
+                    const newVal = prompt('Input Stok Minimum Baru:', current);
+                    if (newVal !== null) {
+                        updateMinQty(id, parseFloat(newVal));
+                    }
+                }
+
+                async function updateMinQty(id, val) {
+                    try {
+                        const response = await fetch('/jsonrpc', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                jsonrpc: "2.0",
+                                method: "call",
+                                params: {
+                                    model: "product.template",
+                                    method: "write",
+                                    args: [[id], { x_min_qty: val }],
+                                    kwargs: {}
+                                }
+                            })
+                        });
+                        location.reload();
+                    } catch (e) {
+                        alert('Error updating min qty');
+                    }
+                }
+            </script>
+        </t>
+    </template>
+</odoo>

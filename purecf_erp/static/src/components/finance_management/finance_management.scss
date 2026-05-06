@@ -1,0 +1,139 @@
+.purecf-finance-container {
+    background-color: #f0f2f5;
+    min-height: 100vh;
+    font-family: 'Inter', sans-serif;
+    display: flex;
+    flex-direction: column;
+
+    .finance-list-view {
+        max-width: 1200px;
+        margin: 0 auto;
+        width: 100%;
+
+        .month-card {
+            background: white;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+
+            &:hover {
+                transform: translateY(-8px);
+                box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04) !important;
+                
+                .month-icon {
+                    background: #3b82f6;
+                    color: white;
+                    i { color: white !important; }
+                }
+            }
+
+            .month-icon {
+                width: 40px;
+                height: 40px;
+                border-radius: 12px;
+                background: #eff6ff;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                transition: all 0.3s ease;
+                
+                i { font-size: 1.2rem; }
+            }
+
+            h4 {
+                color: #0f172a;
+                font-weight: 700;
+            }
+        }
+    }
+
+    .finance-main-full {
+        flex: 1;
+        padding: 2rem 3rem;
+        max-width: 1200px;
+        margin: 0 auto;
+        width: 100%;
+
+        .top-header-finance {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2.5rem;
+            h2 { font-weight: 800; color: #0f172a; margin-bottom: 0.5rem; }
+        }
+    }
+
+    .report-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+    }
+
+    .report-card {
+        background: white;
+        padding: 2rem;
+        border-radius: 24px;
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+
+        .card-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .card-data {
+            .label { font-size: 0.85rem; color: #64748b; font-weight: 600; }
+            h3 { margin: 0.2rem 0 0; font-weight: 800; font-size: 1.5rem; color: #1e293b; }
+        }
+
+        &.income {
+            .card-icon { background: #f0fdf4; color: #16a34a; }
+        }
+        &.expense {
+            .card-icon { background: #fef2f2; color: #dc2626; }
+        }
+        &.profit {
+            .card-icon { background: #eff6ff; color: #2563eb; }
+        }
+        &.stock {
+            .card-icon { background: #fffbeb; color: #d97706; }
+        }
+    }
+
+    table {
+        margin-top: 1rem;
+        th { font-weight: 700; color: #475569; border-bottom: 2px solid #f1f5f9; }
+        td { padding: 1.2rem 0.75rem; vertical-align: middle; color: #1e293b; font-weight: 500; }
+    }
+
+    .loading-overlay {
+        position: fixed;
+        top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(255, 255, 255, 0.8);
+        z-index: 2000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 768px) {
+    .purecf-finance-container {
+        .finance-main-full {
+            padding: 1.5rem;
+            .top-header-finance {
+                flex-direction: column;
+                gap: 1.5rem;
+            }
+        }
+    }
+}

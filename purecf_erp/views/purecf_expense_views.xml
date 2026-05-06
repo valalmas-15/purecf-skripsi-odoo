@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Tree View for Expenses -->
+    <record id="view_purecf_expense_tree" model="ir.ui.view">
+        <field name="name">purecf.expense.tree</field>
+        <field name="model">purecf.expense</field>
+        <field name="arch" type="xml">
+            <tree string="Pengeluaran &amp; Operasional" decoration-info="note == 'Bahan Baku'" default_order="date desc">
+                <field name="date"/>
+                <field name="config_id"/>
+                <field name="session_id"/>
+                <field name="note"/>
+                <field name="amount" sum="Total Pengeluaran"/>
+                <field name="user_id" widget="many2one_avatar_user"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Form View for Expenses -->
+    <record id="view_purecf_expense_form" model="ir.ui.view">
+        <field name="name">purecf.expense.form</field>
+        <field name="model">purecf.expense</field>
+        <field name="arch" type="xml">
+            <form string="Detail Pengeluaran">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="date"/>
+                            <field name="session_id"/>
+                            <field name="config_id"/>
+                        </group>
+                        <group>
+                            <field name="amount" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                            <field name="note" placeholder="Contoh: [Operasional] Gaji Karyawan April"/>
+                            <field name="user_id"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Search View for Expenses -->
+    <record id="view_purecf_expense_search" model="ir.ui.view">
+        <field name="name">purecf.expense.search</field>
+        <field name="model">purecf.expense</field>
+        <field name="arch" type="xml">
+            <search string="Cari Pengeluaran">
+                <field name="note"/>
+                <field name="session_id"/>
+                <field name="config_id"/>
+                <filter string="Operasional" name="filter_opex" domain="[('note', 'not ilike', '[Bahan Baku]')]"/>
+                <filter string="HPP / Stok" name="filter_cogs" domain="[('note', 'ilike', '[Bahan Baku]')]"/>
+                <separator/>
+                <filter string="Hari Ini" name="today" domain="[('date', '&gt;=', context_today().strftime('%Y-%m-%d 00:00:00')), ('date', '&lt;=', context_today().strftime('%Y-%m-%d 23:59:59'))]"/>
+                <group expand="0" string="Group By">
+                    <filter string="Sesi" name="group_session" context="{'group_by': 'session_id'}"/>
+                    <filter string="Toko" name="group_config" context="{'group_by': 'config_id'}"/>
+                    <filter string="Tanggal" name="group_date" context="{'group_by': 'date:day'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_purecf_expenses" model="ir.actions.act_window">
+        <field name="name">Biaya Operasional &amp; Pengeluaran</field>
+        <field name="res_model">purecf.expense</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="view_purecf_expense_search"/>
+        <field name="context">{'default_note': '[Operasional] ', 'search_default_filter_opex': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Belum ada catatan pengeluaran.
+            </p>
+            <p>
+                Catat biaya operasional (Gaji, Listrik, WiFi) atau pengeluaran toko lainnya di sini.
+            </p>
+        </field>
+    </record>
+</odoo>

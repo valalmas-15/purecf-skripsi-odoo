@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- POS Order Inherit Views -->
+    <record id="pos_order_form_view_inherit_purecf" model="ir.ui.view">
+        <name>pos.order.form.inherit.purecf</name>
+        <model>pos.order</model>
+        <inherit_id ref="point_of_sale.view_pos_pos_form"/>
+        <arch type="xml">
+            <field name="pos_reference" position="after">
+                <field name="x_offline_id" readonly="1"/>
+                <field name="active" widget="boolean_button" options='{"terminology": "archive"}'/>
+            </field>
+            <xpath expr="//group[@name='order_fields']" position="after">
+                <group string="Flutter POS Info">
+                    <field name="x_payment_method"/>
+                    <field name="x_nominal" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                    <field name="x_kembalian" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                </group>
+            </xpath>
+            <xpath expr="//field[@name='lines']/tree/field[@name='product_id']" position="after">
+                <field name="full_product_name"/>
+            </xpath>
+        </arch>
+    </record>
+
+    <record id="pos_order_tree_view_inherit_purecf" model="ir.ui.view">
+        <name>pos.order.tree.inherit.purecf</name>
+        <model>pos.order</model>
+        <inherit_id ref="point_of_sale.view_pos_order_tree"/>
+        <arch type="xml">
+            <field name="name" position="after">
+                <field name="x_offline_id" optional="show"/>
+            </field>
+        </arch>
+    </record>
+    <record id="pos_order_search_view_inherit_purecf" model="ir.ui.view">
+        <name>pos.order.search.inherit.purecf</name>
+        <model>pos.order</model>
+        <inherit_id ref="point_of_sale.view_pos_order_search"/>
+        <arch type="xml">
+            <xpath expr="//filter[@name='done']" position="after">
+                <separator/>
+                <filter string="Archived" name="inactive" domain="[('active', '=', False)]"/>
+            </xpath>
+        </arch>
+    </record>
+</odoo>

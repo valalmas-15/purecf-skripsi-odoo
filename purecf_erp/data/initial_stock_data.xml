@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- 
+        File inisialisasi stok awal untuk SEMUA bahan baku (Ingredients).
+        Hanya mengisi kuantitas stok, tanpa mengubah harga modal (standard_price).
+    -->
+
+    <!-- 1. Inisialisasi Stok SEMUA Bahan Baku -->
+    
+    <!-- === LIQUIDS / BASES (mL) === -->
+    <function model="product.template" name="action_update_stock_manual" eval="[ref('purecf_erp.ing_espresso'), 5000, 1]"/>
+    <function model="product.template" name="action_update_stock_manual" eval="[ref('purecf_erp.ing_puremilk'), 10000, 1]"/>
+    <function model="product.template" name="action_update_stock_manual" eval="[ref('purecf_erp.ing_uht'), 12000, 1]"/>
+    <function model="product.template" name="action_update_stock_manual" eval="[ref('purecf_erp.ing_skm'), 5000, 1]"/>
+    <function model="product.template" name="action_update_stock_manual" eval="[ref('purecf_erp.ing_air_kelapa'), 8000, 1]"/>
+    <function model="product.template" name="action_update_stock_manual" eval="[ref('purecf_erp.ing_mineral_water'), 20000, 1]"/>
+    <function model="product.template" name="action_update_stock_manual" eval="[ref('purecf_erp.ing_sparkling_soda'), 6000, 1]"/>
+    <function model="product.template" name="action_update_stock_manual" eval="[ref('purecf_erp.ing_orange_juice'), 4000, 1]"/>
+    <function model="product.template" name="action_update_stock_manual" eval="[ref('purecf_erp.ing_saos_tiram'), 2000, 1]"/>
+    <function model="product.template" name="action_update_stock_manual" eval="[ref('purecf_erp.ing_kecap'), 3000, 1]"/>
+    <function model="product.template" name="action_update_stock_manual" eval="[ref('purecf_erp.ing_minyak'), 10000, 1]"/>
+
+    <!-- === POWDERS / DRY GOODS (Gram) === -->
+    <function model="product.template" name="action_update_stock_manual" eval="[ref('purecf_erp.ing_matcha_powder'), 2000, 1]"/>
+    <function model="product.template" name="action_update_stock_manual" eval="[ref('purecf_erp.ing_chocolate_powder'), 3000, 1]"/>
+    <function model="product.template" name="action_update_stock_manual" eval="[ref('purecf_erp.ing_redvelvet_powder'), 2000, 1]"/>
+    <function model="product.template" name="action_update_stock_manual" eval="[ref('purecf_erp.ing_selasih'), 500, 1]"/>
+    <function model="product.template" name="action_update_stock_manual" eval="[ref('purecf_erp.ing_cabe_giling'), 1000, 1]"/>
+    <function model="product.template" name="action_update_stock_manual" eval="[ref('purecf_erp.ing_bawang_putih'), 1000, 1]"/>
+    <function model="product.template" name="action_update_stock_manual" eval="[ref('purecf_erp.ing_bawang_merah'), 1000, 1]"/>
+    <function model="product.template" name="action_update_stock_manual" eval="[ref('purecf_erp.ing_sawi'), 2000, 1]"/>
+    <function model="product.template" name="action_update_stock_manual" eval="[ref('purecf_erp.ing_udang_rebon'), 500, 1]"/>
+    <function model="product.template" name="action_update_stock_manual" eval="[ref('purecf_erp.ing_nasi_putih'), 15000, 1]"/>
+    <function model="product.template" name="action_update_stock_manual" eval="[ref('purecf_erp.ing_masako'), 1000, 1]"/>
+    <function model="product.template" name="action_update_stock_manual" eval="[ref('purecf_erp.ing_micin'), 1000, 1]"/>
+    <function model="product.template" name="action_update_stock_manual" eval="[ref('purecf_erp.ing_garam'), 1000, 1]"/>
+    <function model="product.template" name="action_update_stock_manual" eval="[ref('purecf_erp.ing_cumi'), 3000, 1]"/>
+    <function model="product.template" name="action_update_stock_manual" eval="[ref('purecf_erp.ing_udang'), 3000, 1]"/>
+    <function model="product.template" name="action_update_stock_manual" eval="[ref('purecf_erp.ing_bumbu_soto'), 1000, 1]"/>
+    <function model="product.template" name="action_update_stock_manual" eval="[ref('purecf_erp.ing_cabe_keriting'), 1000, 1]"/>
+    <function model="product.template" name="action_update_stock_manual" eval="[ref('purecf_erp.ing_mie_kwetiau'), 5000, 1]"/>
+    <function model="product.template" name="action_update_stock_manual" eval="[ref('purecf_erp.ing_dada_ayam'), 5000, 1]"/>
+    <function model="product.template" name="action_update_stock_manual" eval="[ref('purecf_erp.ing_tepung_terigu'), 5000, 1]"/>
+    <function model="product.template" name="action_update_stock_manual" eval="[ref('purecf_erp.ing_ladaku'), 200, 1]"/>
+    <function model="product.template" name="action_update_stock_manual" eval="[ref('purecf_erp.ing_segitiga_biru'), 5000, 1]"/>
+    <function model="product.template" name="action_update_stock_manual" eval="[ref('purecf_erp.ing_cabe_setan'), 1000, 1]"/>
+
+    <!-- === UNITS (Pcs) === -->
+    <function model="product.template" name="action_update_stock_manual" eval="[ref('purecf_erp.ing_cup_hot'), 100, 1]"/>
+    <function model="product.template" name="action_update_stock_manual" eval="[ref('purecf_erp.ing_cup_ice'), 250, 1]"/>
+    <function model="product.template" name="action_update_stock_manual" eval="[ref('purecf_erp.ing_tomat'), 50, 1]"/>
+    <function model="product.template" name="action_update_stock_manual" eval="[ref('purecf_erp.ing_mie_burung_dara'), 40, 1]"/>
+    <function model="product.template" name="action_update_stock_manual" eval="[ref('purecf_erp.ing_timun'), 30, 1]"/>
+    <function model="product.template" name="action_update_stock_manual" eval="[ref('purecf_erp.ing_telur'), 60, 1]"/>
+
+    <!-- === SYRUPS (mL) === -->
+    <function model="product.template" name="action_update_stock_manual" eval="[ref('purecf_erp.ing_palme_liquid'), 2000, 1]"/>
+    <function model="product.template" name="action_update_stock_manual" eval="[ref('purecf_erp.ing_scothcie_liquid'), 1000, 1]"/>
+    <function model="product.template" name="action_update_stock_manual" eval="[ref('purecf_erp.ing_vanille_liquid'), 1000, 1]"/>
+    <function model="product.template" name="action_update_stock_manual" eval="[ref('purecf_erp.ing_rume_liquid'), 1000, 1]"/>
+    <function model="product.template" name="action_update_stock_manual" eval="[ref('purecf_erp.ing_monkist_liquid'), 1000, 1]"/>
+    <function model="product.template" name="action_update_stock_manual" eval="[ref('purecf_erp.ing_shaka_liquid'), 1000, 1]"/>
+    <function model="product.template" name="action_update_stock_manual" eval="[ref('purecf_erp.ing_nutty_liquid'), 1000, 1]"/>
+    <function model="product.template" name="action_update_stock_manual" eval="[ref('purecf_erp.ing_elder_liquid'), 1000, 1]"/>
+    <function model="product.template" name="action_update_stock_manual" eval="[ref('purecf_erp.ing_lychee_liquid'), 1000, 1]"/>
+    <function model="product.template" name="action_update_stock_manual" eval="[ref('purecf_erp.ing_lemon_liquid'), 1000, 1]"/>
+    <function model="product.template" name="action_update_stock_manual" eval="[ref('purecf_erp.ing_blue_lagoon_liquid'), 1000, 1]"/>
+    <function model="product.template" name="action_update_stock_manual" eval="[ref('purecf_erp.ing_lemon_based'), 5000, 1]"/>
+    <function model="product.template" name="action_update_stock_manual" eval="[ref('purecf_erp.ing_lychee_based'), 5000, 1]"/>
+
+    <!-- === FRUITS / GARNISH (Pcs) === -->
+    <function model="product.template" name="action_update_stock_manual" eval="[ref('purecf_erp.ing_dryed_lemon'), 100, 1]"/>
+    <function model="product.template" name="action_update_stock_manual" eval="[ref('purecf_erp.ing_lemon_fruit'), 15, 1]"/>
+    <function model="product.template" name="action_update_stock_manual" eval="[ref('purecf_erp.ing_lychee_fruit'), 30, 1]"/>
+    <function model="product.template" name="action_update_stock_manual" eval="[ref('purecf_erp.ing_es_batu'), 50000, 1]"/>
+
+    <!-- 2. Reordering Rules (Stok Minimum) -->
+    <record id="rule_all_espresso" model="stock.warehouse.orderpoint"><field name="product_id" ref="purecf_erp.ing_espresso"/><field name="product_min_qty">500</field><field name="product_max_qty">2000</field></record>
+    <record id="rule_all_uht" model="stock.warehouse.orderpoint"><field name="product_id" ref="purecf_erp.ing_uht"/><field name="product_min_qty">2000</field><field name="product_max_qty">10000</field></record>
+    <record id="rule_all_matcha" model="stock.warehouse.orderpoint"><field name="product_id" ref="purecf_erp.ing_matcha_powder"/><field name="product_min_qty">200</field><field name="product_max_qty">1000</field></record>
+    <record id="rule_all_cup_ice" model="stock.warehouse.orderpoint"><field name="product_id" ref="purecf_erp.ing_cup_ice"/><field name="product_min_qty">50</field><field name="product_max_qty">300</field></record>
+    <record id="rule_all_nasi" model="stock.warehouse.orderpoint"><field name="product_id" ref="purecf_erp.ing_nasi_putih"/><field name="product_min_qty">2000</field><field name="product_max_qty">10000</field></record>
+    <record id="rule_all_telur" model="stock.warehouse.orderpoint"><field name="product_id" ref="purecf_erp.ing_telur"/><field name="product_min_qty">10</field><field name="product_max_qty">50</field></record>
+</odoo>

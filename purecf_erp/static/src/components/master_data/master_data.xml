@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="purecf_erp.MasterData" owl="1">
+        <div class="purecf-master-container">
+            <!-- Sidebar -->
+            <div class="master-sidebar">
+                <div class="sidebar-brand">Master Data</div>
+                
+                <div t-attf-class="nav-item {{state.activeItem == 'products' ? 'active' : ''}}" 
+                     t-on-click="() => this.openAction('product.product_template_action', 'products')">
+                    <i class="fa fa-shopping-basket"></i> Produk &amp; Menu
+                </div>
+                
+                <div t-attf-class="nav-item {{state.activeItem == 'categories' ? 'active' : ''}}" 
+                     t-on-click="() => this.openAction('point_of_sale.product_pos_category_action', 'categories')">
+                    <i class="fa fa-tags"></i> Kategori Produk
+                </div>
+
+                <div t-attf-class="nav-item {{state.activeItem == 'orders' ? 'active' : ''}}" 
+                     t-on-click="() => this.openAction('point_of_sale.action_pos_order_line', 'orders')">
+                    <i class="fa fa-list-alt"></i> Riwayat Transaksi
+                </div>
+                
+                <div t-attf-class="nav-item {{state.activeItem == 'users' ? 'active' : ''}}" 
+                     t-on-click="() => this.openAction('base.action_res_users', 'users')">
+                    <i class="fa fa-users"></i> Pengguna &amp; Kasir
+                </div>
+
+                <div t-attf-class="nav-item {{state.activeItem == 'branches' ? 'active' : ''}}" 
+                     t-on-click="() => this.openAction('point_of_sale.action_pos_config_kanban', 'branches')">
+                    <i class="fa fa-map-marker"></i> Cabang Toko
+                </div>
+                
+                <div class="mt-auto p-3 text-center" style="opacity: 0.5; font-size: 0.7rem;">
+                    Purecf ERP Master Data
+                </div>
+            </div>
+
+            <!-- Hub Content -->
+            <div class="master-main">
+                <div class="hub-welcome">
+                    <div class="welcome-icon">
+                        <i class="fa fa-database"></i>
+                    </div>
+                    <h1>Pusat Data Master</h1>
+                    <p>Pilih kategori di sebelah kiri untuk mengelola data operasional Cafe Anda.</p>
+                    
+                    <div class="quick-stats-row">
+                        <div class="stat-card" t-on-click="() => this.openAction('product.product_template_action', 'products')">
+                            <i class="fa fa-shopping-basket"></i>
+                            <div class="stat-label">Total Produk</div>
+                            <div class="stat-desc">Kelola Menu &amp; Harga</div>
+                        </div>
+                        <div class="stat-card" t-on-click="() => this.openAction('base.action_res_users', 'users')">
+                            <i class="fa fa-users"></i>
+                            <div class="stat-label">Total User</div>
+                            <div class="stat-desc">Kasir &amp; Admin</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </t>
+</templates>

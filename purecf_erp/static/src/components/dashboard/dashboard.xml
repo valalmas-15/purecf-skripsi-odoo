@@ -1,0 +1,277 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="purecf_erp.Dashboard" owl="1">
+        <div class="purecf-dashboard-container">
+            <!-- Main Content -->
+            <div class="dashboard-main">
+                <div class="top-header">
+                    <h2>Cafe Overview</h2>
+                    <div class="d-flex align-items-center">
+                        <!-- Branch Selector -->
+                        <div class="branch-selector me-3">
+                            <select class="form-select border-0 shadow-sm" t-on-change="onBranchChange" style="border-radius: 50px; padding: 0.6rem 1.5rem; font-weight: 600; color: #475569; cursor: pointer;">
+                                <option value="all">Semua Cabang</option>
+                                <t t-foreach="state.branches" t-as="branch" t-key="branch.id">
+                                    <option t-att-value="branch.id"><t t-esc="branch.name"/></option>
+                                </t>
+                            </select>
+                        </div>
+                        
+                        <!-- Date Range Selector -->
+                        <div class="position-relative">
+                            <div class="date-pill-range" t-on-click="togglePicker">
+                                <i class="fa fa-calendar me-2 text-primary"></i>
+                                <span t-esc="formattedDateRange"></span>
+                                <i t-attf-class="fa fa-chevron-{{state.showPicker ? 'up' : 'down'}} ms-3" style="font-size: 0.8rem; opacity: 0.5;"></i>
+                            </div>
+
+                            <div t-if="state.showPicker" class="date-picker-popover shadow-lg border p-3">
+                                <div class="d-flex flex-column gap-2">
+                                    <div class="small fw-bold text-muted mb-1">Pilih Rentang Tanggal</div>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <input type="date" class="form-control form-control-sm" t-att-value="state.dateFrom" t-on-change="(ev) => this.onDateChange('dateFrom', ev)"/>
+                                        <span class="text-muted">ke</span>
+                                        <input type="date" class="form-control form-control-sm" t-att-value="state.dateTo" t-on-change="(ev) => this.onDateChange('dateTo', ev)"/>
+                                    </div>
+                                    <button class="btn btn-primary btn-sm mt-2 w-100" t-on-click="togglePicker" style="background: #714B67; border: none;">Terapkan</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button class="btn btn-success ms-3 shadow-sm border-0" t-on-click="exportMonthlyReport" style="border-radius: 12px; padding: 0.6rem 1.2rem; font-weight: 600;">
+                             <i class="fa fa-file-excel-o me-1"></i> Eksport Bulanan
+                        </button>
+
+                        <button class="btn btn-light ms-2 shadow-sm border-0" t-on-click="loadDashboardData" t-att-disabled="state.loading" style="border-radius: 12px; padding: 0.6rem 1rem;">
+                             <i t-attf-class="fa fa-refresh {{state.loading ? 'fa-spin' : ''}}"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <t t-if="state.loading">
+                    <div class="text-center py-5" style="margin-top: 100px;">
+                        <div class="spinner-grow text-primary" role="status"></div>
+                        <p class="mt-3 text-muted fw-bold">Synchronizing real-time data...</p>
+                    </div>
+                </t>
+
+                <t t-else="">
+                    <!-- KPI Cards -->
+                    <div class="kpi-row">
+                        <div class="glass-card">
+                            <div class="card-label">Total Penjualan</div>
+                            <div class="card-value" t-esc="formatCurrency(state.summary.sales)"/>
+                            <div t-attf-class="card-trend {{state.summary.trends.sales >= 0 ? 'up' : 'down'}}">
+                                <i t-attf-class="fa fa-arrow-{{state.summary.trends.sales >= 0 ? 'up' : 'down'}}"></i> 
+                                <t t-esc="state.summary.trends.sales >= 0 ? '+' : ''"/><t t-esc="state.summary.trends.sales"/>%
+                                <span class="trend-period" t-esc="state.summary.comparison_label"/>
+                            </div>
+                        </div>
+                        <div class="glass-card">
+                            <div class="card-label">Total Pesanan</div>
+                            <div class="card-value" t-esc="state.summary.total_orders"/>
+                            <div t-attf-class="card-trend {{state.summary.trends.orders >= 0 ? 'up' : 'down'}}">
+                                <i t-attf-class="fa fa-arrow-{{state.summary.trends.orders >= 0 ? 'up' : 'down'}}"></i> 
+                                <t t-esc="state.summary.trends.orders >= 0 ? '+' : ''"/><t t-esc="state.summary.trends.orders"/>%
+                                <span class="trend-period" t-esc="state.summary.comparison_label"/>
+                            </div>
+                        </div>
+                        <div class="glass-card">
+                            <div class="card-label">Rata-rata Transaksi</div>
+                            <div class="card-value" t-esc="formatCurrency(state.summary.avg_order)"/>
+                            <div t-attf-class="card-trend {{state.summary.trends.avg_order >= 0 ? 'up' : 'down'}}">
+                                <i t-attf-class="fa fa-arrow-{{state.summary.trends.avg_order >= 0 ? 'up' : 'down'}}"></i> 
+                                <t t-esc="state.summary.trends.avg_order >= 0 ? '+' : ''"/><t t-esc="state.summary.trends.avg_order"/>%
+                                <span class="trend-period" t-esc="state.summary.comparison_label"/>
+                            </div>
+                        </div>
+                        <div class="glass-card">
+                            <div class="card-label">Profit Bersih</div>
+                            <div class="card-value" t-esc="formatCurrency(state.summary.profit)"/>
+                            <div class="card-trend up">
+                                <i class="fa fa-info-circle"></i> 
+                                <t t-esc="state.summary.hpp_percent"/>% HPP
+                                <span class="trend-period">Sudah dipotong waste</span>
+                            </div>
+                        </div>
+                        <div class="glass-card waste-card">
+                            <div class="card-label">Kerugian Waste</div>
+                            <div class="card-value text-danger" t-esc="formatCurrency(state.summary.waste_cost)"/>
+                            <div class="card-trend down">
+                                <i class="fa fa-trash"></i> 
+                                <span class="trend-period">Selisih Opname Fisik</span>
+                            </div>
+                        </div>
+                        <div class="glass-card">
+                            <div class="card-label">Selisih Kas</div>
+                            <div t-attf-class="card-value {{state.summary.cash_variance &lt; 0 ? 'text-danger' : (state.summary.cash_variance &gt; 0 ? 'text-success' : '')}}" t-esc="formatCurrency(state.summary.cash_variance)"/>
+                            <div class="card-trend">
+                                <i t-attf-class="fa fa-{{state.summary.cash_variance &lt; 0 ? 'exclamation-triangle text-danger' : (state.summary.cash_variance &gt; 0 ? 'plus-circle text-success' : 'check-circle text-success')}}"></i> 
+                                <span class="trend-period">Selisih Kasir vs Sistem</span>
+                            </div>
+                        </div>
+                        <div class="glass-card balance-card" style="border-left: 4px solid #D4A373;">
+                            <div class="card-label">Saldo Kas Sekarang</div>
+                            <div class="card-value" style="color: #1B1B2F;" t-esc="formatCurrency(state.summary.cash_balance)"/>
+                            <div class="card-trend">
+                                <i class="fa fa-university"></i> 
+                                <span class="trend-period">Saldo berjalan di sistem</span>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <!-- Charts Row -->
+                    <div class="chart-container">
+                        <div class="chart-header">
+                            <h3>Performa Penjualan Per Jam</h3>
+                            <div class="badge rounded-pill bg-light text-dark px-3 py-2 border">Live Update</div>
+                        </div>
+                        <div class="chart-main-row">
+                            <!-- Y-Axis -->
+                            <div class="chart-y-axis">
+                                <t t-foreach="chartYLabels" t-as="label" t-key="label.text">
+                                    <div class="y-label" t-attf-style="top: {{ (label.y / 200) * 100 }}%">
+                                        <t t-esc="label.text"/>
+                                    </div>
+                                </t>
+                            </div>
+
+                            <div class="line-chart-visual">
+                                <!-- Grid Lines -->
+                                <div class="chart-grid">
+                                    <div class="grid-line" style="top: 0%"></div>
+                                    <div class="grid-line" style="top: 20%"></div>
+                                    <div class="grid-line" style="top: 40%"></div>
+                                    <div class="grid-line" style="top: 60%"></div>
+                                    <div class="grid-line" style="top: 80%"></div>
+                                    <div class="grid-line" style="top: 100%"></div>
+                                </div>
+
+                                <svg viewBox="0 0 1000 200" preserveAspectRatio="none" class="line-chart-svg">
+                                    <defs>
+                                        <linearGradient id="chartGradient" x1="0" y1="0" x2="0" y2="1">
+                                            <stop offset="0%" stop-color="#D4A373" stop-opacity="0.2"/>
+                                            <stop offset="100%" stop-color="#D4A373" stop-opacity="0"/>
+                                        </linearGradient>
+                                    </defs>
+                                    <!-- Shaded Area -->
+                                    <path t-att-d="chartAreaPath" fill="url(#chartGradient)" class="chart-area"/>
+                                    <!-- Main Line -->
+                                    <path t-att-d="chartLinePath" fill="none" stroke="#D4A373" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" class="chart-line"/>
+                                    
+                                    <!-- Markers (Dots) - Only show if there's a transaction -->
+                                    <t t-foreach="chartPoints" t-as="point" t-key="point.label">
+                                        <circle t-if="point.value > 0" t-att-cx="point.x" t-att-cy="point.y" r="6" fill="#D4A373" stroke="white" stroke-width="2" class="chart-marker">
+                                            <title><t t-esc="point.label"/>: <t t-esc="formatCurrency(point.value)"/></title>
+                                        </circle>
+                                    </t>
+                                </svg>
+                                
+                                <!-- X-Axis Labels -->
+                                <div class="chart-labels-x">
+                                    <t t-foreach="state.chartData" t-as="data" t-key="data.label">
+                                        <span t-if="data.label.endsWith(':00') and (['00', '03', '06', '09', '12', '15', '18', '21', '23'].includes(data.label.split(':')[0]))">
+                                            <t t-esc="data.label"/>
+                                        </span>
+                                    </t>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Bottom Grid -->
+                    <div class="tables-grid">
+                        <!-- Top Products -->
+                        <div class="table-card">
+                            <div class="table-title"><i class="fa fa-star"></i> Produk Terlaris (Top 5)</div>
+                            <table class="custom-table">
+                                <t t-foreach="state.topProductsFlattened" t-as="prod" t-key="prod.name">
+                                    <tr>
+                                        <td class="rank">#<t t-esc="prod_index + 1"/></td>
+                                        <td class="name"><t t-esc="prod.name"/></td>
+                                        <td class="stat"><t t-esc="prod.qty"/> Qty</td>
+                                        <td class="stat text-primary"><t t-esc="formatCurrency(prod.total)"/></td>
+                                    </tr>
+                                </t>
+                            </table>
+                        </div>
+
+                        <!-- Top Branches (Only if All Branches selected) -->
+                        <div t-if="!state.configId" class="table-card">
+                            <div class="table-title"><i class="fa fa-map-marker"></i> Performa Cabang</div>
+                            <table class="custom-table">
+                                <t t-foreach="state.topBranches" t-as="branch" t-key="branch.name">
+                                    <tr>
+                                        <td class="rank">#<t t-esc="branch_index + 1"/></td>
+                                        <td class="name"><t t-esc="branch.name"/></td>
+                                        <td class="stat"><t t-esc="branch.orders"/> Orders</td>
+                                        <td class="stat text-primary"><t t-esc="formatCurrency(branch.sales)"/></td>
+                                    </tr>
+                                </t>
+                            </table>
+                        </div>
+
+                        <!-- Top Waste -->
+                        <div class="table-card">
+                            <div class="table-title" style="color: #ef4444;"><i class="fa fa-trash"></i> Item Waste Tertinggi</div>
+                            <table class="custom-table">
+                                <t t-if="!state.topWaste.length">
+                                    <tr><td colspan="4" class="text-center text-muted py-4">Tidak ada data waste periode ini</td></tr>
+                                </t>
+                                <t t-foreach="state.topWaste" t-as="item" t-key="item.name">
+                                    <tr>
+                                        <td class="rank">#<t t-esc="item_index + 1"/></td>
+                                        <td class="name"><t t-esc="item.name"/></td>
+                                        <td class="stat"><t t-esc="item.qty"/> <t t-esc="item.uom"/></td>
+                                        <td class="stat text-danger"><t t-esc="formatCurrency(item.total)"/></td>
+                                    </tr>
+                                </t>
+                            </table>
+                        </div>
+
+                        <!-- Usage Analysis -->
+                        <div class="table-card usage-analysis-card">
+                            <div class="table-title" style="color: #6366f1;"><i class="fa fa-flask"></i> Analisis Penggunaan Bahan</div>
+                            <div style="max-height: 350px; overflow-y: auto;">
+                                <table class="custom-table">
+                                    <thead>
+                                        <tr style="position: sticky; top: 0; background: white; z-index: 1;">
+                                            <th class="py-2 text-muted small">Bahan</th>
+                                            <th class="py-2 text-muted small text-center">Terpakai</th>
+                                            <th class="py-2 text-muted small">Produk Terjual (Qty)</th>
+                                        </tr>
+                                    </thead>
+                                    <t t-if="!state.usageAnalysis.length">
+                                        <tr><td colspan="3" class="text-center text-muted py-4">Tidak ada data penggunaan bahan</td></tr>
+                                    </t>
+                                    <t t-foreach="state.usageAnalysis" t-as="row" t-key="row.ingredient_id">
+                                        <tr>
+                                            <td class="name"><t t-esc="row.ingredient_name"/></td>
+                                            <td class="stat text-center"><t t-esc="row.actual_consumed"/> <t t-esc="row.uom_name"/></td>
+                                            <td class="small text-muted"><t t-esc="row.related_sales"/></td>
+                                        </tr>
+                                    </t>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Payment Methods -->
+                        <div class="table-card">
+                            <div class="table-title"><i class="fa fa-credit-card"></i> Metode Pembayaran</div>
+                            <table class="custom-table">
+                                <t t-foreach="state.paymentMethods" t-as="pay" t-key="pay.name">
+                                    <tr>
+                                        <td class="name"><t t-esc="pay.name"/></td>
+                                        <td class="stat"><t t-esc="pay.percentage"/>%</td>
+                                        <td class="stat text-primary"><t t-esc="formatCurrency(pay.value)"/></td>
+                                    </tr>
+                                </t>
+                            </table>
+                        </div>
+                    </div>
+                </t>
+            </div>
+        </div>
+    </t>
+</templates>

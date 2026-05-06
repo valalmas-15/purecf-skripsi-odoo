@@ -1,0 +1,53 @@
+<odoo>
+    <!-- Cron to send daily HPP report to managers/admins -->
+    <record id="ir_cron_send_daily_hpp_report" model="ir.cron">
+        <field name="name">Daily HPP Report</field>
+        <field name="model_id" ref="model_purecf_report_hpp"/>
+        <field name="state">code</field>
+        <field name="code">model.cron_send_daily_report()</field>
+        <field name="user_id" ref="base.user_root" />
+        <field name="interval_number">1</field>
+        <field name="interval_type">days</field>
+        <field name="numbercall">-1</field>
+        <field name="active" eval="True"/>
+    </record>
+
+    <!-- Cron for monthly report summary -->
+    <record id="ir_cron_send_monthly_hpp_report" model="ir.cron">
+        <field name="name">Monthly HPP Summary</field>
+        <field name="model_id" ref="model_purecf_report_hpp"/>
+        <field name="state">code</field>
+        <field name="code">model.cron_send_monthly_report()</field>
+        <field name="user_id" ref="base.user_root" />
+        <field name="interval_number">1</field>
+        <field name="interval_type">months</field>
+        <field name="numbercall">-1</field>
+        <field name="active" eval="True"/>
+    </record>
+
+    <!-- Background Session Validator (Every 10 minutes) -->
+    <record id="ir_cron_pos_session_validate" model="ir.cron">
+        <field name="name">Background POS Session Validator</field>
+        <field name="model_id" ref="model_pos_session"/>
+        <field name="state">code</field>
+        <field name="code">model.cron_validate_closing_sessions()</field>
+        <field name="user_id" ref="base.user_root" />
+        <field name="interval_number">10</field>
+        <field name="interval_type">minutes</field>
+        <field name="numbercall">-1</field>
+        <field name="active" eval="True"/>
+    </record>
+
+    <!-- Automated Monthly Financial Closing (Daily Check) -->
+    <record id="ir_cron_auto_generate_monthly_close" model="ir.cron">
+        <field name="name">PureCF: Auto Generate Monthly Report</field>
+        <field name="model_id" ref="model_purecf_monthly_close"/>
+        <field name="state">code</field>
+        <field name="code">model.cron_auto_generate_monthly_reports()</field>
+        <field name="user_id" ref="base.user_root" />
+        <field name="interval_number">1</field>
+        <field name="interval_type">days</field>
+        <field name="numbercall">-1</field>
+        <field name="active" eval="True"/>
+    </record>
+</odoo>

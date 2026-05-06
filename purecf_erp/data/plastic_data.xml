@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Plastic Bag Ingredients -->
+    <record id="ing_plastic_1cup" model="product.template">
+        <field name="name">Plastik Minuman 1 Cup</field>
+        <field name="type">product</field>
+        <field name="uom_id" ref="uom.product_uom_unit"/>
+        <field name="x_is_ingredient">True</field>
+        <field name="sale_ok" eval="False"/>
+        <field name="available_in_pos">False</field>
+    </record>
+
+    <record id="ing_plastic_2cup" model="product.template">
+        <field name="name">Plastik Minuman 2 Cup</field>
+        <field name="type">product</field>
+        <field name="uom_id" ref="uom.product_uom_unit"/>
+        <field name="x_is_ingredient">True</field>
+        <field name="sale_ok" eval="False"/>
+        <field name="available_in_pos">False</field>
+    </record>
+
+    <record id="ing_plastic_food" model="product.template">
+        <field name="name">Plastik Makanan</field>
+        <field name="type">product</field>
+        <field name="uom_id" ref="uom.product_uom_unit"/>
+        <field name="x_is_ingredient">True</field>
+        <field name="sale_ok" eval="False"/>
+        <field name="available_in_pos" eval="False"/>
+    </record>
+
+    <!-- Initial Stock (100 pcs each) -->
+    <function model="product.template" name="action_update_stock_manual" eval="[ref('purecf_erp.ing_plastic_1cup'), 100, 1]"/>
+    <function model="product.template" name="action_update_stock_manual" eval="[ref('purecf_erp.ing_plastic_2cup'), 100, 1]"/>
+    <function model="product.template" name="action_update_stock_manual" eval="[ref('purecf_erp.ing_plastic_food'), 100, 1]"/>
+
+    <!-- Reordering Rules (Stok Minimum) -->
+    <record id="rule_plastic_1cup" model="stock.warehouse.orderpoint">
+        <field name="product_id" ref="purecf_erp.ing_plastic_1cup"/>
+        <field name="product_min_qty">20</field>
+        <field name="product_max_qty">100</field>
+    </record>
+    <record id="rule_plastic_2cup" model="stock.warehouse.orderpoint">
+        <field name="product_id" ref="purecf_erp.ing_plastic_2cup"/>
+        <field name="product_min_qty">20</field>
+        <field name="product_max_qty">100</field>
+    </record>
+    <record id="rule_plastic_food" model="stock.warehouse.orderpoint">
+        <field name="product_id" ref="purecf_erp.ing_plastic_food"/>
+        <field name="product_min_qty">20</field>
+        <field name="product_max_qty">100</field>
+    </record>
+</odoo>

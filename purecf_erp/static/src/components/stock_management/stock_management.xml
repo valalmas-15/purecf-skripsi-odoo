@@ -1,0 +1,275 @@
+<?xml version="1.0" encoding="utf-8"?>
+<templates xml:space="preserve">
+    <t t-name="purecf_erp.StockManagement" owl="1">
+        <div class="o_purecf_stock_management">
+            <div class="purecf-stock-container">
+                <div class="stock-main">
+                    <div class="top-header">
+                        <h2 t-if="state.activeTab === 'stock_in'">Stok Masuk (Belanja)</h2>
+                        <h2 t-if="state.activeTab === 'opname'">Input Opname Fisik</h2>
+                        <h2 t-if="state.activeTab === 'master_data'">Monitoring Stok</h2>
+                        <h2 t-if="state.activeTab === 'opname_history'">Daftar Laporan Opname</h2>
+                        <div class="branch-badge shadow-sm animate__animated animate__fadeInRight">
+                            <i class="fa fa-map-marker"></i> 
+                            <span t-esc="state.warehouseName"/>
+                        </div>
+                    </div>
+
+                    <!-- Stock In Tab -->
+                    <div t-if="state.activeTab === 'stock_in'">
+                        <div class="card">
+                            <div class="section-title">Input Stok Masuk (Belanja)</div>
+                            <div class="form-group">
+                                <label>Cari &amp; Pilih Bahan Baku</label>
+                                <div class="search-dropdown-wrapper">
+                                    <div class="search-container mb-0">
+                                        <i class="fa fa-search"></i>
+                                        <input type="text" 
+                                               placeholder="Ketik nama bahan baku..." 
+                                               t-model="state.stockInSearch"
+                                               t-on-focus="() => this.state.showStockInDropdown = true"/>
+                                    </div>
+                                    <div t-if="state.showStockInDropdown" class="search-results-list shadow-lg">
+                                        <div t-if="filteredStockIn.length === 0" class="p-3 text-muted small">Bahan tidak ditemukan...</div>
+                                        <t t-foreach="filteredStockIn" t-as="ing" t-key="ing.id">
+                                            <div class="result-item" t-on-click="() => this.selectIngredient(ing)">
+                                                <div class="fw-bold"><t t-esc="ing.name"/></div>
+                                                <div class="small text-muted"><t t-esc="ing.uom_id[1]"/></div>
+                                            </div>
+                                        </t>
+                                    </div>
+                                    <!-- Backdrop to close dropdown -->
+                                    <div t-if="state.showStockInDropdown" class="dropdown-backdrop" t-on-click="() => this.state.showStockInDropdown = false"></div>
+                                </div>
+                            </div>
+                            <div class="row-flex">
+                                <div class="form-group flex-1">
+                                    <label>Jumlah</label>
+                                    <div class="uom-input-container">
+                                        <input type="number" id="input-qty" class="uom-input" placeholder="0"/>
+                                        <span class="uom-label" t-if="state.stockInSelected" t-esc="state.stockInSelected.uom_id[1]"></span>
+                                    </div>
+                                </div>
+                                <div class="form-group flex-1">
+                                    <label>Harga Total</label>
+                                    <div class="price-input-container">
+                                        <span class="currency-label">Rp</span>
+                                        <input type="number" id="input-price" class="price-input" placeholder="0"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <button class="btn btn-primary" t-on-click="addToCart">Tambah ke Daftar</button>
+                        </div>
+
+                        <div class="item-list">
+                            <t t-foreach="state.cart" t-as="item" t-key="item_index">
+                                <div class="item-card">
+                                    <div class="item-info">
+                                        <h4><t t-esc="item.name"/></h4>
+                                        <p><t t-esc="item.quantity"/> <t t-esc="item.uom"/> — Rp <t t-esc="item.price.toLocaleString()"/></p>
+                                    </div>
+                                    <i class="fa fa-trash remove-btn" t-on-click="() => this.removeFromCart(item_index)"></i>
+                                </div>
+                            </t>
+                        </div>
+
+                        <div t-if="state.cart.length > 0">
+                            <button class="btn btn-success" t-on-click="saveStock">SIMPAN &amp; KIRIM KE ODOO</button>
+                        </div>
+                    </div>
+
+                    <!-- Opname Tab (Refactored to Batch) -->
+                    <div t-if="state.activeTab === 'opname'">
+                        <!-- Warning if already opnamed today -->
+                        <div t-if="state.todayReportExists" class="alert alert-warning mb-4 shadow-sm border-0 d-flex align-items-center" style="border-left: 5px solid #f59e0b !important; background: #fffbeb;">
+                            <i class="fa fa-info-circle mr-3" style="font-size: 1.5rem; color: #f59e0b;"></i>
+                            <div>
+                                <h5 class="m-0 fw-bold" style="color: #92400e;">Opname Hari Ini Selesai</h5>
+                                <p class="m-0 small" style="color: #b45309;">Laporan opname harian untuk tanggal ini sudah dibuat. Anda bisa melihat rinciannya di tab Riwayat.</p>
+                            </div>
+                        </div>
+
+                        <div class="search-container">
+                            <i class="fa fa-search"></i>
+                            <input type="text" t-model="state.opnameSearch" placeholder="Cari bahan baku untuk opname..."/>
+                        </div>
+
+                        <!-- Floating Cart Summary -->
+                        <div t-if="state.opnameCart.length > 0" class="card batch-summary-card shadow animate__animated animate__fadeInUp">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h4 class="m-0"><t t-esc="state.opnameCart.length"/> Item Siap Dilaporkan</h4>
+                                    <p class="small text-muted mb-0">Klik tombol di bawah untuk menyimpan laporan</p>
+                                </div>
+                                <button class="btn btn-success" t-on-click="submitOpnameBatch">
+                                    <i class="fa fa-check-circle mr-2"></i> SIMPAN LAPORAN
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="opname-list">
+                            <t t-foreach="filteredOpname" t-as="ing" t-key="ing.id">
+                                <t t-set="inCart" t-value="state.opnameCart.find(c => c.id === ing.id)"/>
+                                <div t-att-class="'card opname-card ' + (inCart ? 'in-cart' : '')">
+                                    <div class="item-info">
+                                        <div class="title-row">
+                                            <h4><t t-esc="ing.name"/></h4>
+                                            <span t-if="!inCart" class="badge badge-orange">BELUM INPUT</span>
+                                            <span t-else="" class="badge badge-green">SUDAH INPUT: <t t-esc="inCart.qty"/> <t t-esc="ing.uom_id[1]"/></span>
+                                        </div>
+                                        <p>Stok Sistem: <t t-esc="ing.qty_available"/> <t t-esc="ing.uom_id[1]"/></p>
+                                    </div>
+                                    <button t-if="!inCart" class="btn btn-primary btn-auto" t-on-click="() => this.openOpnameDialog(ing)">
+                                        Input Opname
+                                    </button>
+                                    <button t-else="" class="btn btn-outline-secondary btn-auto" t-on-click="() => this.removeFromOpnameCart(ing.id)">
+                                        Batal
+                                    </button>
+                                </div>
+                            </t>
+                        </div>
+                    </div>
+
+                    <!-- Opname History Tab (Full Daily List) -->
+                    <div t-if="state.activeTab === 'opname_history'">
+                        <div class="history-list mt-2">
+                            <div t-if="state.opnameHistory.length === 0" class="empty-state text-center p-5">
+                                <i class="fa fa-file-text-o mb-3" style="font-size: 3rem; color: #cbd5e1;"></i>
+                                <p class="text-muted">Belum ada riwayat laporan opname.</p>
+                            </div>
+                            
+                            <t t-foreach="state.opnameHistory" t-as="report" t-key="report.id">
+                                <div class="card report-master-card mb-3">
+                                    <div class="report-header p-4 d-flex justify-content-between align-items-center" 
+                                         t-on-click="() => this.toggleReportDetails(report.id)"
+                                         style="cursor: pointer;">
+                                        <div class="d-flex align-items-center">
+                                            <div class="date-badge mr-4 text-center">
+                                                <div class="month text-uppercase small"><t t-esc="report.formattedDate.month"/></div>
+                                                <div class="day h4 m-0 fw-bold"><t t-esc="report.formattedDate.day"/></div>
+                                                <div class="year small"><t t-esc="report.formattedDate.year"/></div>
+                                            </div>
+                                            <div>
+                                                <h4 class="m-0 fw-bold text-dark"><t t-esc="report.name"/></h4>
+                                                <div class="small text-muted mt-1">
+                                                    <i class="fa fa-user-o"></i> <t t-esc="report.admin_id[1]"/> • 
+                                                    <i class="fa fa-cubes"></i> <t t-esc="report.total_items"/> Bahan di-cek
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="d-flex align-items-center">
+                                            <span class="badge badge-green mr-3">LENGKAP</span>
+                                            <i t-att-class="'fa ' + (state.expandedReport === report.id ? 'fa-chevron-up' : 'fa-chevron-down')" style="color: #94a3b8"></i>
+                                        </div>
+                                    </div>
+
+                                    <!-- Detail Lines -->
+                                    <div t-if="state.expandedReport === report.id" class="report-details border-top bg-light animate__animated animate__fadeIn">
+                                        <div class="p-0">
+                                            <table class="table mb-0 small">
+                                                <thead class="bg-white">
+                                                    <tr>
+                                                        <th>Bahan Baku</th>
+                                                        <th class="text-end">Sistem</th>
+                                                        <th class="text-end">Aktual</th>
+                                                        <th class="text-end">Selisih</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <t t-foreach="report.line_ids" t-as="line" t-key="line.id">
+                                                        <tr>
+                                                            <td class="fw-bold"><t t-esc="line.product_name"/></td>
+                                                            <td class="text-end"><t t-esc="line.old_qty"/> <t t-esc="line.uom"/></td>
+                                                            <td class="text-end text-primary"><t t-esc="line.new_qty"/> <t t-esc="line.uom"/></td>
+                                                            <td class="text-end">
+                                                                <span t-att-class="line.waste &lt; 0 ? 'text-danger' : (line.waste > 0 ? 'text-success' : 'text-muted')">
+                                                                    <t t-if="line.waste > 0">+</t><t t-esc="line.waste"/>
+                                                                </span>
+                                                            </td>
+                                                        </tr>
+                                                    </t>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </t>
+                        </div>
+                    </div>
+
+                    <!-- Master Data Tab -->
+                    <div t-if="state.activeTab === 'master_data'">
+                        <div class="search-container">
+                            <i class="fa fa-search"></i>
+                            <input type="text" t-model="state.masterSearch" placeholder="Cari di Master Data..."/>
+                        </div>
+                        <div class="filter-chips">
+                            <div class="chip" t-att-class="{active: state.masterFilter === 'all'}" t-on-click="() => this.state.masterFilter = 'all'">Semua</div>
+                            <div class="chip" t-att-class="{active: state.masterFilter === 'emergency'}" t-on-click="() => this.state.masterFilter = 'emergency'">Darurat</div>
+                            <div class="chip" t-att-class="{active: state.masterFilter === 'warning'}" t-on-click="() => this.state.masterFilter = 'warning'">Warning</div>
+                            <div class="chip" t-att-class="{active: state.masterFilter === 'safe'}" t-on-click="() => this.state.masterFilter = 'safe'">Aman</div>
+                        </div>
+                        <div class="master-list">
+                            <t t-foreach="filteredMaster" t-as="ing" t-key="ing.id">
+                                <t t-set="is_low" t-value="ing.qty_available &lt;= ing.x_min_qty"/>
+                                <t t-set="is_warning" t-value="!is_low and ing.qty_available &lt;= (ing.x_min_qty * 1.2)"/>
+                                
+                                <div class="card master-item">
+                                    <div class="master-header">
+                                        <div class="icon-container">
+                                            <i class="fa fa-archive" t-att-style="'color:' + (is_low ? '#c5221f' : (is_warning ? '#e65100' : '#1e7e34'))"></i>
+                                        </div>
+                                        <div class="master-info">
+                                            <div class="title-edit">
+                                                <h4><t t-esc="ing.name"/></h4>
+                                                <i class="fa fa-pencil edit-icon" t-on-click="() => this.editMinQty(ing)"></i>
+                                            </div>
+                                            <p class="min-qty-text">
+                                                Stok Minimum: <t t-esc="ing.x_min_qty"/> <t t-esc="ing.uom_id[1]"/>
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div class="progress-container">
+                                        <div class="progress-bar" t-att-style="'width:' + Math.min(100, (ing.qty_available / (ing.x_min_qty * 2 || 100)) * 100) + '%; background-color:' + (is_low ? '#c5221f' : (is_warning ? '#e65100' : '#1e7e34'))"></div>
+                                    </div>
+                                    <div class="status-footer">
+                                        <span t-att-class="'badge ' + (is_low ? 'badge-red' : (is_warning ? 'badge-orange' : 'badge-green'))">
+                                            <t t-if="is_low">DARURAT</t>
+                                            <t t-elif="is_warning">WARNING</t>
+                                            <t t-else=''>AMAN</t>
+                                        </span>
+                                        <span class="current-qty"><t t-esc="ing.qty_available"/> <t t-esc="ing.uom_id[1]"/></span>
+                                    </div>
+                                </div>
+                            </t>
+                        </div>
+                    </div>
+
+                    <!-- Dialog -->
+                    <div t-if="state.dialog.show" class="dialog-overlay">
+                        <div class="card dialog-card">
+                            <h3>Opname: <t t-esc="state.dialog.name"/></h3>
+                            <div class="form-group">
+                                <label>Stok Fisik Aktual</label>
+                                <div class="dialog-input-row">
+                                    <input type="number" t-model="state.dialog.qty" placeholder="0"/>
+                                    <span><t t-esc="state.dialog.uom"/></span>
+                                </div>
+                            </div>
+                            <div class="dialog-actions">
+                                <button class="btn btn-cancel" t-on-click="closeDialog">Batal</button>
+                                <button class="btn btn-primary" t-on-click="confirmOpname">Simpan</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div t-if="state.loading" class="loading-overlay">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </t>
+</templates>

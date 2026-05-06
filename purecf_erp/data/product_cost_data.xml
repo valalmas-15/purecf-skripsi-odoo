@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Update Existing Ingredient Costs -->
+        <record id="ing_uht" model="product.template"><field name="standard_price">18.42</field></record>
+        <record id="ing_matcha_powder" model="product.template"><field name="standard_price">257</field></record>
+        <record id="ing_chocolate_powder" model="product.template"><field name="standard_price">170</field></record>
+        <record id="ing_redvelvet_powder" model="product.template"><field name="standard_price">55</field></record>
+        <record id="ing_palme_liquid" model="product.template"><field name="standard_price">117.3</field></record>
+        <record id="ing_scothcie_liquid" model="product.template"><field name="standard_price">126.7</field></record>
+        <record id="ing_vanille_liquid" model="product.template"><field name="standard_price">138.7</field></record>
+        <record id="ing_shaka_liquid" model="product.template"><field name="standard_price">142.7</field></record>
+        <record id="ing_monkist_liquid" model="product.template"><field name="standard_price">142.7</field></record>
+        <record id="ing_rume_liquid" model="product.template"><field name="standard_price">148</field></record>
+        <record id="ing_nutty_liquid" model="product.template"><field name="standard_price">141.3</field></record>
+        <record id="ing_cup_ice" model="product.template"><field name="standard_price">860</field></record>
+        <record id="ing_cup_hot" model="product.template"><field name="standard_price">860</field></record>
+        <record id="ing_telur" model="product.template"><field name="standard_price">1733.3</field></record>
+        <record id="ing_dada_ayam" model="product.template"><field name="standard_price">30</field></record>
+        <record id="ing_bawang_putih" model="product.template"><field name="standard_price">50</field></record>
+        <record id="ing_tomat" model="product.template"><field name="standard_price">10</field></record>
+        <record id="ing_timun" model="product.template"><field name="standard_price">10</field></record>
+        <record id="ing_sawi" model="product.template"><field name="standard_price">10</field></record>
+        <record id="ing_puremilk" model="product.template"><field name="standard_price">20</field></record>
+        <record id="ing_skm" model="product.template"><field name="standard_price">15</field></record>
+        <record id="ing_air_kelapa" model="product.template"><field name="standard_price">10</field></record>
+        <record id="ing_mineral_water" model="product.template"><field name="standard_price">1.5</field></record>
+        <record id="ing_sparkling_soda" model="product.template"><field name="standard_price">25</field></record>
+        <record id="ing_orange_juice" model="product.template"><field name="standard_price">35</field></record>
+        <record id="ing_saos_tiram" model="product.template"><field name="standard_price">60</field></record>
+        <record id="ing_kecap" model="product.template"><field name="standard_price">40</field></record>
+        <record id="ing_minyak" model="product.template"><field name="standard_price">18</field></record>
+        <record id="ing_selasih" model="product.template"><field name="standard_price">100</field></record>
+        <record id="ing_cabe_giling" model="product.template"><field name="standard_price">80</field></record>
+        <record id="ing_udang_rebon" model="product.template"><field name="standard_price">120</field></record>
+        <record id="ing_nasi_putih" model="product.template"><field name="standard_price">15</field></record>
+        <record id="ing_masako" model="product.template"><field name="standard_price">50</field></record>
+        <record id="ing_micin" model="product.template"><field name="standard_price">40</field></record>
+        <record id="ing_garam" model="product.template"><field name="standard_price">10</field></record>
+        <record id="ing_cumi" model="product.template"><field name="standard_price">90</field></record>
+        <record id="ing_udang" model="product.template"><field name="standard_price">110</field></record>
+        <record id="ing_bumbu_soto" model="product.template"><field name="standard_price">70</field></record>
+        <record id="ing_cabe_keriting" model="product.template"><field name="standard_price">60</field></record>
+        <record id="ing_mie_kwetiau" model="product.template"><field name="standard_price">25</field></record>
+        <record id="ing_tepung_terigu" model="product.template"><field name="standard_price">14</field></record>
+        <record id="ing_ladaku" model="product.template"><field name="standard_price">200</field></record>
+        <record id="ing_segitiga_biru" model="product.template"><field name="standard_price">15</field></record>
+        <record id="ing_bawang_merah" model="product.template"><field name="standard_price">45</field></record>
+        <record id="ing_cabe_setan" model="product.template"><field name="standard_price">75</field></record>
+        <record id="ing_elder_liquid" model="product.template"><field name="standard_price">140</field></record>
+        <record id="ing_blue_lagoon_liquid" model="product.template"><field name="standard_price">140</field></record>
+        <record id="ing_lemon_based" model="product.template"><field name="standard_price">130</field></record>
+        <record id="ing_lychee_based" model="product.template"><field name="standard_price">130</field></record>
+        <record id="ing_lemon_liquid" model="product.template"><field name="standard_price">130</field></record>
+        <record id="ing_lychee_liquid" model="product.template"><field name="standard_price">130</field></record>
+        <record id="ing_dryed_lemon" model="product.template"><field name="standard_price">2000</field></record>
+        <record id="ing_lemon_fruit" model="product.template"><field name="standard_price">3000</field></record>
+        <record id="ing_lychee_fruit" model="product.template"><field name="standard_price">2500</field></record>
+        <record id="ing_es_batu" model="product.template"><field name="standard_price">500</field></record>
+        <record id="ing_espresso" model="product.template"><field name="standard_price">3500</field></record>
+
+        <!-- New Ingredients -->
+        <record id="ing_beans" model="product.template">
+            <field name="name">Beans</field>
+            <field name="type">product</field>
+            <field name="uom_id" ref="uom_gram"/>
+            <field name="uom_po_id" ref="uom_gram"/>
+            <field name="standard_price">175</field>
+            <field name="x_is_ingredient">True</field>
+            <field name="sale_ok" eval="False"/>
+            <field name="purchase_ok" eval="True"/>
+        </record>
+        <record id="ing_creamer" model="product.template">
+            <field name="name">Creamer</field>
+            <field name="type">product</field>
+            <field name="uom_id" ref="uom_gram"/>
+            <field name="uom_po_id" ref="uom_gram"/>
+            <field name="standard_price">46</field>
+            <field name="x_is_ingredient">True</field>
+            <field name="sale_ok" eval="False"/>
+            <field name="purchase_ok" eval="True"/>
+        </record>
+        <record id="ing_beras" model="product.template">
+            <field name="name">Beras</field>
+            <field name="type">product</field>
+            <field name="uom_id" ref="uom_gram"/>
+            <field name="uom_po_id" ref="uom_gram"/>
+            <field name="standard_price">15</field>
+            <field name="x_is_ingredient">True</field>
+            <field name="sale_ok" eval="False"/>
+            <field name="purchase_ok" eval="True"/>
+        </record>
+        <record id="ing_indomie_goreng" model="product.template">
+            <field name="name">Indomie Goreng</field>
+            <field name="type">product</field>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="uom_po_id" ref="uom.product_uom_unit"/>
+            <field name="standard_price">2750</field>
+            <field name="x_is_ingredient">True</field>
+            <field name="sale_ok" eval="False"/>
+            <field name="purchase_ok" eval="True"/>
+        </record>
+        <record id="ing_indomie_kuah" model="product.template">
+            <field name="name">Indomie Kuah</field>
+            <field name="type">product</field>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="uom_po_id" ref="uom.product_uom_unit"/>
+            <field name="standard_price">2925</field>
+            <field name="x_is_ingredient">True</field>
+            <field name="sale_ok" eval="False"/>
+            <field name="purchase_ok" eval="True"/>
+        </record>
+        <record id="ing_kwetiaw" model="product.template">
+            <field name="name">Kwetiaw</field>
+            <field name="type">product</field>
+            <field name="uom_id" ref="uom_gram"/>
+            <field name="uom_po_id" ref="uom_gram"/>
+            <field name="standard_price">53</field>
+            <field name="x_is_ingredient">True</field>
+            <field name="sale_ok" eval="False"/>
+            <field name="purchase_ok" eval="True"/>
+        </record>
+        <record id="ing_sedotan" model="product.template">
+            <field name="name">Sedotan</field>
+            <field name="type">product</field>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="uom_po_id" ref="uom.product_uom_unit"/>
+            <field name="standard_price">52</field>
+            <field name="x_is_ingredient">True</field>
+            <field name="sale_ok" eval="False"/>
+            <field name="purchase_ok" eval="True"/>
+        </record>
+    </data>
+</odoo>

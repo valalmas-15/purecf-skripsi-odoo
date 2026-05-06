@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="purecf_erp.FinanceManagement" owl="1">
+        <div class="purecf-finance-container">
+            <!-- List View -->
+            <t t-if="state.view === 'list'">
+                <div class="finance-list-view p-4">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <div>
+                            <h2 class="fw-bold text-dark mb-1">Arsip Laporan Keuangan</h2>
+                            <p class="text-muted mb-0">Pilih periode untuk melihat detail laporan laba rugi.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="row g-3">
+                        <t t-foreach="state.monthlyList" t-as="item" t-key="item.label">
+                            <div class="col-12 col-md-4 col-lg-3">
+                                <div class="month-card shadow-sm p-4 h-100 border-0" t-on-click="() => this.selectMonth(item.month, item.year)">
+                                    <div class="d-flex align-items-center justify-content-between mb-3">
+                                        <div class="month-icon">
+                                            <i class="fa fa-calendar-o text-primary"/>
+                                        </div>
+                                        <span class="badge rounded-pill bg-light text-dark fw-normal" t-esc="item.year"/>
+                                    </div>
+                                    <h4 class="fw-bold mb-1" t-esc="item.label.split(' ')[0]"/>
+                                    <p class="text-muted small mb-0">Klik untuk melihat detail</p>
+                                </div>
+                            </div>
+                        </t>
+                    </div>
+                </div>
+            </t>
+
+            <!-- Detail View -->
+            <t t-else="">
+                <div class="finance-main-full p-4">
+                    <div class="finance-summary">
+                        <div class="top-header-finance mb-4">
+                            <div class="d-flex align-items-center">
+                                <button class="btn btn-outline-dark btn-sm rounded-pill me-3" t-on-click="goBack">
+                                    <i class="fa fa-arrow-left"/> Kembali
+                                </button>
+                                <div>
+                                    <h2 class="fw-bold mb-1">Detail Laporan: <t t-esc="state.monthlyList.find(i => i.month === state.month &amp;&amp; i.year === state.year).label"/></h2>
+                                    <p class="text-muted mb-0">Laporan laba rugi operasional cafe.</p>
+                                </div>
+                            </div>
+                            <div class="filter-controls d-flex align-items-center">
+                                <button class="btn btn-success rounded-pill px-4 shadow-sm" t-on-click="exportExcel">
+                                    <i class="fa fa-file-excel-o me-2"/> Eksport Excel
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="report-grid">
+                            <div class="report-card income">
+                                <div class="card-icon"><i class="fa fa-arrow-up"></i></div>
+                                <div class="card-data">
+                                    <span class="label">Total Pendapatan</span>
+                                    <h3 t-esc="state.report.income.toLocaleString('id-ID', {style: 'currency', currency: 'IDR'})"/>
+                                </div>
+                            </div>
+
+                            <div class="report-card expense">
+                                <div class="card-icon"><i class="fa fa-arrow-down"></i></div>
+                                <div class="card-data">
+                                    <span class="label">Total Pengeluaran</span>
+                                    <h3 t-esc="state.report.expense.toLocaleString('id-ID', {style: 'currency', currency: 'IDR'})"/>
+                                </div>
+                            </div>
+
+                            <div class="report-card profit">
+                                <div class="card-icon"><i class="fa fa-check-circle"></i></div>
+                                <div class="card-data">
+                                    <span class="label">Laba Bersih</span>
+                                    <h3 t-esc="state.report.profit.toLocaleString('id-ID', {style: 'currency', currency: 'IDR'})"/>
+                                </div>
+                            </div>
+
+                            <div class="report-card stock">
+                                <div class="card-icon"><i class="fa fa-archive"></i></div>
+                                <div class="card-data">
+                                    <span class="label">Nilai Aset Stok</span>
+                                    <h3 t-esc="state.report.stock_value.toLocaleString('id-ID', {style: 'currency', currency: 'IDR'})"/>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-5">
+                            <div class="card p-4 border-0 shadow-sm" style="border-radius: 24px;">
+                                <h4 class="fw-bold mb-4">Detail Akuntansi Periode Ini</h4>
+                                <div class="table-responsive">
+                                    <table class="table table-hover align-middle">
+                                        <thead class="bg-light">
+                                            <tr>
+                                                <th class="border-0 py-3">Kategori</th>
+                                                <th class="text-end border-0 py-3">Nominal</th>
+                                                <th class="text-end border-0 py-3">Persentase</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td class="py-3">Penjualan Kotor (Gross Sales)</td>
+                                                <td class="text-end py-3 fw-semibold" t-esc="state.report.income.toLocaleString('id-ID', {style: 'currency', currency: 'IDR'})"/>
+                                                <td class="text-end py-3"><span class="badge bg-primary bg-opacity-10 text-primary">100%</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td class="py-3">Beban Operasional</td>
+                                                <td class="text-end py-3 text-danger fw-semibold" t-esc="'- ' + state.report.expense.toLocaleString('id-ID', {style: 'currency', currency: 'IDR'})"/>
+                                                <td class="text-end py-3"><span class="badge bg-danger bg-opacity-10 text-danger"><t t-esc="state.report.expense_percent"/>%</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td class="py-3 text-muted">Pajak (PPN 11%)</td>
+                                                <td class="text-end py-3 text-muted" t-esc="state.report.tax.toLocaleString('id-ID', {style: 'currency', currency: 'IDR'})"/>
+                                                <td class="text-end py-3 text-muted">11%</td>
+                                            </tr>
+                                            <tr class="fw-bold border-top">
+                                                <td class="py-4 h5 fw-bold">Total Laba Bersih</td>
+                                                <td class="text-end py-4 h5 fw-bold text-success" t-esc="state.report.profit.toLocaleString('id-ID', {style: 'currency', currency: 'IDR'})"/>
+                                                <td class="text-end py-4"><span class="badge bg-success px-3 py-2"><t t-esc="state.report.profit_percent"/>%</span></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </t>
+
+            <div t-if="state.loading" class="loading-overlay">
+                <div class="spinner-grow text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+            </div>
+        </div>
+    </t>
+</templates>

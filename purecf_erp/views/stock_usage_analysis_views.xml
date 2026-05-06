@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_purecf_stock_usage_analysis_form" model="ir.ui.view">
+        <field name="name">purecf.stock.usage.analysis.form</field>
+        <field name="model">purecf.stock.usage.analysis</field>
+        <field name="arch" type="xml">
+            <form string="Analisis Penggunaan Stok">
+                <header>
+                    <button name="action_calculate" string="Hitung Analisis" type="object" class="oe_highlight"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="date_from"/>
+                        </group>
+                        <group>
+                            <field name="date_to"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Hasil Analisis" name="analysis_lines">
+                            <field name="line_ids" readonly="1">
+                                <tree string="Usage vs Sales">
+                                    <field name="ingredient_id"/>
+                                    <field name="uom_id"/>
+                                    <field name="start_qty" sum="Total"/>
+                                    <field name="stock_in" sum="Total"/>
+                                    <field name="end_qty" sum="Total"/>
+                                    <field name="actual_consumed" decoration-danger="actual_consumed &gt; 0" sum="Total"/>
+                                    <field name="related_sales"/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                    <div class="oe_grey">
+                        * Terpakai (Actual) = Stok Awal + Masuk - Stok Akhir.<br/>
+                        * Produk Terjual menunjukkan menu apa saja yang menggunakan bahan tersebut (berdasarkan Resep/BoM).
+                    </div>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_purecf_stock_usage_analysis" model="ir.actions.act_window">
+        <field name="name">Analisis Penggunaan Stok</field>
+        <field name="res_model">purecf.stock.usage.analysis</field>
+        <field name="view_mode">form</field>
+        <field name="target">inline</field>
+    </record>
+</odoo>

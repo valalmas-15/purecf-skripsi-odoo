@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<data>
+    <!-- User Role Groups Category -->
+    <record id="module_purecf_erp_category" model="ir.module.category">
+        <field name="name">Purecf ERP Access Rights</field>
+        <field name="description">User roles for Purecf ERP system.</field>
+        <field name="sequence">10</field>
+    </record>
+
+    <!-- User Role Groups -->
+    <record id="group_purecf_owner" model="res.groups">
+        <field name="name">Owner</field>
+        <field name="category_id" ref="module_purecf_erp_category"/>
+        <field name="implied_ids" eval="[(4, ref('base.group_user')), (4, ref('point_of_sale.group_pos_manager')), (4, ref('hr.group_hr_manager')), (4, ref('account.group_account_manager')), (4, ref('stock.group_stock_manager'))]"/>
+    </record>
+
+    <record id="group_purecf_supervisor" model="res.groups">
+        <field name="name">Supervisor</field>
+        <field name="category_id" ref="module_purecf_erp_category"/>
+        <field name="implied_ids" eval="[(4, ref('base.group_user')), (4, ref('hr.group_hr_user'))]"/>
+    </record>
+
+    <record id="group_purecf_kasir" model="res.groups">
+        <field name="name">Kasir</field>
+        <field name="category_id" ref="module_purecf_erp_category"/>
+        <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+    </record>
+
+    <!-- Job Positions -->
+    <record id="job_purecf_owner" model="hr.job">
+        <field name="name">Owner</field>
+    </record>
+
+    <record id="job_purecf_supervisor" model="hr.job">
+        <field name="name">Supervisor</field>
+    </record>
+
+    <record id="job_purecf_kasir" model="hr.job">
+        <field name="name">Kasir</field>
+    </record>
+
+    <!-- Users -->
+    <record id="user_purecf_owner" model="res.users">
+        <field name="name">Owner Purecf</field>
+        <field name="login">owner@purecf.com</field>
+        <field name="password">purecf123</field>
+        <field name="groups_id" eval="[(6, 0, [ref('group_purecf_owner'), ref('base.group_user')])]"/>
+    </record>
+
+    <record id="user_purecf_supervisor" model="res.users">
+        <field name="name">Supervisor Purecf</field>
+        <field name="login">supervisor@purecf.com</field>
+        <field name="password">purecf123</field>
+        <field name="groups_id" eval="[(6, 0, [ref('group_purecf_supervisor'), ref('base.group_user')])]"/>
+    </record>
+
+    <record id="user_purecf_kasir" model="res.users">
+        <field name="name">Kasir Purecf</field>
+        <field name="login">kasir@purecf.com</field>
+        <field name="password">purecf123</field>
+        <field name="groups_id" eval="[(6, 0, [ref('group_purecf_kasir'), ref('base.group_user')])]"/>
+    </record>
+
+    <!-- Employees -->
+    <record id="employee_purecf_owner" model="hr.employee">
+        <field name="name">Owner Purecf</field>
+        <field name="user_id" ref="user_purecf_owner"/>
+        <field name="job_id" ref="job_purecf_owner"/>
+    </record>
+
+    <record id="employee_purecf_supervisor" model="hr.employee">
+        <field name="name">Supervisor Purecf</field>
+        <field name="user_id" ref="user_purecf_supervisor"/>
+        <field name="job_id" ref="job_purecf_supervisor"/>
+    </record>
+
+    <record id="employee_purecf_kasir" model="hr.employee">
+        <field name="name">Kasir Purecf</field>
+        <field name="user_id" ref="user_purecf_kasir"/>
+        <field name="job_id" ref="job_purecf_kasir"/>
+    </record>
+</data>

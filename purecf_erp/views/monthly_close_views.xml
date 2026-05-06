@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Tree View for Monthly Reports -->
+    <record id="view_purecf_monthly_close_tree" model="ir.ui.view">
+        <field name="name">purecf.monthly.close.tree</field>
+        <field name="model">purecf.monthly.close</field>
+        <field name="arch" type="xml">
+            <tree string="Laporan Bulanan" decoration-success="total_profit > 0" decoration-danger="total_profit &lt; 0">
+                <field name="name"/>
+                <field name="config_id"/>
+                <field name="date_from"/>
+                <field name="date_to"/>
+                <field name="total_sales" sum="Total Sales" widget="monetary"/>
+                <field name="total_cogs" sum="Total HPP" widget="monetary" optional="show"/>
+                <field name="total_opex" sum="Total Operasional" widget="monetary" optional="show"/>
+                <field name="total_profit" sum="Total Laba" widget="monetary"/>
+                <field name="admin_id" widget="many2one_avatar_user"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Form View for Monthly Reports -->
+    <record id="view_purecf_monthly_close_form" model="ir.ui.view">
+        <field name="name">purecf.monthly.close.form</field>
+        <field name="model">purecf.monthly.close</field>
+        <field name="arch" type="xml">
+            <form string="Detail Laporan Bulanan">
+                <header>
+                    <button name="action_recalculate" string="Update Data" type="object" class="btn-secondary" icon="fa-refresh"/>
+                    <button name="action_export_excel" string="Eksport Excel" type="object" class="btn-primary" icon="fa-file-excel-o"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group string="Periode">
+                            <field name="date_from"/>
+                            <field name="date_to"/>
+                            <field name="config_id"/>
+                            <field name="admin_id"/>
+                            <field name="month" invisible="1"/>
+                            <field name="year" invisible="1"/>
+                        </group>
+                        <group string="Ringkasan Finansial">
+                            <field name="total_sales" widget="monetary" options="{'currency_field': 'company_id.currency_id'}"/>
+                            <field name="total_cogs" widget="monetary" options="{'currency_field': 'company_id.currency_id'}"/>
+                            <field name="total_opex" widget="monetary" options="{'currency_field': 'company_id.currency_id'}"/>
+                            <field name="total_profit" widget="monetary" decoration-success="total_profit > 0" decoration-danger="total_profit &lt; 0" options="{'currency_field': 'company_id.currency_id'}"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Server Action to Generate Current Month Report -->
+    <record id="action_generate_current_month_report" model="ir.actions.server">
+        <field name="name">Generate Report Bulan Ini</field>
+        <field name="model_id" ref="model_purecf_monthly_close"/>
+        <field name="binding_model_id" ref="model_purecf_monthly_close"/>
+        <field name="binding_view_types">list</field>
+        <field name="state">code</field>
+        <field name="code">
+now = datetime.datetime.now()
+res = model.create({
+    'date_from': now.strftime('%Y-%m-01'),
+    'date_to': now.strftime('%Y-%m-%d'),
+    'total_sales': 0,
+    'total_cogs': 0,
+    'total_opex': 0,
+    'total_profit': 0,
+})
+res.action_recalculate()
+action = {
+    'type': 'ir.actions.act_window',
+    'res_model': 'purecf.monthly.close',
+    'res_id': res.id,
+    'view_mode': 'form',
+    'target': 'current',
+}
+        </field>
+    </record>
+
+    <!-- Window Action -->
+    <record id="action_purecf_finance_reports" model="ir.actions.act_window">
+        <field name="name">Laporan Bulanan</field>
+        <field name="res_model">purecf.monthly.close</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Belum ada laporan bulanan.
+            </p>
+            <p>
+                Klik tombol <strong>Generate Report Bulan Ini</strong> di menu "Action" atau klik Create untuk membuat manual.
+            </p>
+        </field>
+    </record>
+</odoo>
