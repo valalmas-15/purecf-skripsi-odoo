@@ -8,13 +8,25 @@
                     <h2>Cafe Overview</h2>
                     <div class="d-flex align-items-center">
                         <!-- Branch Selector -->
-                        <div class="branch-selector me-3">
-                            <select class="form-select border-0 shadow-sm" t-on-change="onBranchChange" style="border-radius: 50px; padding: 0.6rem 1.5rem; font-weight: 600; color: #475569; cursor: pointer;">
-                                <option value="all">Semua Cabang</option>
+                        <div class="branch-selector me-3 position-relative">
+                            <select t-attf-class="form-select shadow-sm {{state.current_anomaly ? 'border border-danger text-danger' : 'border-0'}}" 
+                                    t-on-change="onBranchChange" 
+                                    t-attf-style="border-radius: 50px; padding: 0.6rem 1.5rem; font-weight: 600; cursor: pointer; color: {{state.current_anomaly ? '#dc3545' : '#475569'}};">
+                                <option value="all">Semua Cabang <t t-if="state.has_any_anomaly">⚠️</t></option>
                                 <t t-foreach="state.branches" t-as="branch" t-key="branch.id">
-                                    <option t-att-value="branch.id"><t t-esc="branch.name"/></option>
+                                    <option t-att-value="branch.id">
+                                        <t t-esc="branch.name"/>
+                                        <t t-if="branch.has_anomaly"> ⚠️ (Selisih)</t>
+                                    </option>
                                 </t>
                             </select>
+                            
+                            <t t-if="state.current_anomaly">
+                                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="z-index: 10;">
+                                    !
+                                    <span class="visually-hidden">Anomaly detected</span>
+                                </span>
+                            </t>
                         </div>
                         
                         <!-- Date Range Selector -->

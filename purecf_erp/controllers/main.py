@@ -779,16 +779,22 @@ class PurecfApiController(http.Controller):
                 }
             return {'status': 'error', 'message': 'Failed to update stock.'}
         except Exception as e:
-            _logger.error("Stock Update Failure: %s", str(e))
+            _logger.error("Update Stock Error: %s", str(e))
             return {'status': 'error', 'message': str(e)}
-
     @http.route('/api/purecf/report/financial', type='json', auth='user', methods=['POST'], csrf=False)
     def get_financial_report(self, date_from=None, date_to=None, config_id=None, **kwargs):
+        print(f"DEBUG: get_financial_report called with date_from={date_from}, date_to={date_to}, config_id={config_id}")
         """Fetch Sales, Cost, and Profit data with charts (Session-based)."""
         try:
             date_from = date_from or fields.Date.today()
             date_to = date_to or fields.Date.today()
             
+            # Default to employee's assigned POS Config if not provided
+            if not config_id or config_id == 'all':
+                employee = request.env['hr.employee'].sudo().search([('user_id', '=', request.env.uid)], limit=1)
+                if employee and employee.x_pos_config_id:
+                    config_id = str(employee.x_pos_config_id.id)
+
             # Fetch all available branches for the dropdown
             available_configs = request.env['pos.config'].sudo().search_read([], ['id', 'name'])
             
@@ -798,15 +804,15 @@ class PurecfApiController(http.Controller):
             _logger.info("Generating Financial Report from %s to %s for config %s", date_from, date_to, config_id)
 
             # 1. Determine Order Domain (Prioritize Active Session if viewing today)
-            today = fields.Date.today()
+            today_local = datetime.now(user_tz).date()
             active_session = False
             
-            # If viewing today and no specific multi-branch filter is applied, look for active session
-            if fields.Date.from_string(date_from) == today and fields.Date.from_string(date_to) == today and (not config_id or config_id == 'all'):
-                active_session = request.env['pos.session'].sudo().search([
-                    ('user_id', '=', request.env.uid),
-                    ('state', '=', 'opened')
-                ], limit=1)
+            # If viewing today, look for active session
+            if fields.Date.from_string(date_from) == today_local and fields.Date.from_string(date_to) == today_local:
+                domain = [('user_id', '=', request.env.uid), ('state', '=', 'opened')]
+                if config_id and config_id != 'all':
+                    domain.append(('config_id', '=', int(config_id)))
+                active_session = request.env['pos.session'].sudo().search(domain, limit=1)
 
             if active_session:
                 _logger.info("DASHBOARD: Using Active Session %s", active_session.name)
@@ -823,8 +829,9 @@ class PurecfApiController(http.Controller):
                 end_dt = user_tz.localize(datetime.combine(fields.Date.from_string(date_to), datetime.max.time())).astimezone(pytz.UTC)
                 
                 order_domain = [
-                    ('date_order', '>=', fields.Datetime.to_string(start_dt)),
-                    ('date_order', '<=', fields.Datetime.to_string(end_dt)),
+                    '|', ('session_id.state', '=', 'opened'),
+                         '&', ('date_order', '>=', fields.Datetime.to_string(start_dt)),
+                              ('date_order', '<=', fields.Datetime.to_string(end_dt)),
                     ('state', 'in', ['paid', 'done', 'invoiced'])
                 ]
                 if config_id and config_id != 'all':
@@ -832,6 +839,21 @@ class PurecfApiController(http.Controller):
             
             if config_id and config_id != 'all':
                 order_domain.append(('session_id.config_id', '=', int(config_id)))
+            
+            # Determine branch anomalies for all branches in the selected date range
+            all_session_domain = [
+                ('start_at', '>=', fields.Datetime.to_string(start_dt)),
+                ('start_at', '<=', fields.Datetime.to_string(end_dt)),
+                ('state', '=', 'closed')
+            ]
+            all_sessions = request.env['pos.session'].sudo().search(all_session_domain)
+            anomaly_map = {}
+            for sess in all_sessions:
+                if abs(sess.cash_register_difference) > 1.0:
+                    anomaly_map[sess.config_id.id] = True
+                    
+            for config in available_configs:
+                config['has_anomaly'] = anomaly_map.get(config['id'], False)
             
             _logger.info("DASHBOARD DEBUG - Order Domain: %s", order_domain)
             orders = request.env['pos.order'].sudo().search(order_domain)
@@ -1072,7 +1094,7 @@ class PurecfApiController(http.Controller):
                     'trends': trends,
                     'comparison_label': "vs Periode Sebelumnya"
                 },
-
+                
                 'chart_data': chart_data,
                 'payment_methods': payment_methods,
                 'top_products_categorized': top_products_categorized,
@@ -1127,7 +1149,7 @@ class PurecfApiController(http.Controller):
         try:
             closings = request.env['purecf.monthly.close'].sudo().search_read([], [
                 'id', 'year', 'month', 'date_from', 'date_to', 
-                'total_sales', 'total_cost', 'total_profit', 'admin_id'
+                'total_sales', 'total_cogs', 'total_opex', 'total_profit', 'admin_id'
             ])
             return {'status': 'success', 'closings': closings}
         except Exception as e:

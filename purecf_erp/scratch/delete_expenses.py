@@ -1,3 +1,4 @@
+# pyrefly: ignore [missing-import]
 import odoo
 from odoo import api, SUPERUSER_ID
 

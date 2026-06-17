@@ -39,7 +39,9 @@ export class PurecfDashboard extends Component {
             topWaste: [],
             topBranches: [],
             usageAnalysis: [],
-            paymentMethods: []
+            paymentMethods: [],
+            has_any_anomaly: false,
+            current_anomaly: false
         });
 
         onWillStart(async () => {
@@ -65,6 +67,14 @@ export class PurecfDashboard extends Component {
                 this.state.topBranches = response.top_branches || [];
                 this.state.topWaste = response.top_waste || [];
                 this.state.usageAnalysis = response.usage_analysis || [];
+
+                this.state.has_any_anomaly = this.state.branches.some(b => b.has_anomaly);
+                if (this.state.configId) {
+                    const selected = this.state.branches.find(b => b.id == this.state.configId);
+                    this.state.current_anomaly = selected ? selected.has_anomaly : false;
+                } else {
+                    this.state.current_anomaly = this.state.has_any_anomaly;
+                }
 
                 if (this.state.chartData.length > 0) {
                     this.state.maxChartValue = Math.max(...this.state.chartData.map(d => d.value));

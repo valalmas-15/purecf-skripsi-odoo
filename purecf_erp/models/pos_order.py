@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from odoo import models, fields, api, _
+from odoo import models, fields, api, SUPERUSER_ID, _
 from odoo.exceptions import UserError
 import logging
 
@@ -131,13 +131,13 @@ class PosOrder(models.Model):
         # Trigger validation (docks stock, creates journal entries)
         try:
             # Recalculate Odoo total to ensure it matches payments
-            order._compute_amount_all()
+            order._compute_batch_amount_all()
             
             # If there's a tiny discrepancy (tax rounding, etc), adjust the last payment
             if order.payment_ids and abs(order.amount_total - order.amount_paid) > 0 and abs(order.amount_total - order.amount_paid) < 10:
                 last_payment = order.payment_ids[0]
                 last_payment.sudo().write({'amount': last_payment.amount + (order.amount_total - order.amount_paid)})
-                order._compute_amount_all()
+                order._compute_batch_amount_all()
 
             # Attempt standard Odoo validation
             if order.state == 'draft':
@@ -147,21 +147,27 @@ class PosOrder(models.Model):
                     _logger.warning("Standard action_pos_order_paid failed, forcing state: %s", str(e))
                     order.write({'state': 'paid'})
             
-            # Force real-time stock deduction by creating and validating picking immediately
-            if order.state in ['paid', 'done', 'invoiced'] and not order.picking_ids:
-                try:
-                    order.sudo()._create_order_picking()
-                    # Ensure pickings are validated to deduct stock
-                    for picking in order.picking_ids.filtered(lambda p: p.state != 'done'):
-                        picking.sudo().action_confirm()
-                        picking.sudo().action_assign()
-                        for move in picking.move_ids:
-                            move.quantity = move.product_uom_qty
-                        picking.sudo().with_context(skip_backorder=True).button_validate()
-                except Exception as e:
-                    _logger.error("Real-time picking validation failed for %s, falling back to manual deduction: %s", order.name, str(e))
-                    for line in order.lines:
-                        self._manual_stock_deduct_fallback(line.product_id, line.qty)
+            # Fast-Sync: Bypass stock.picking and directly update stock.quant
+            if order.state in ['paid', 'done', 'invoiced']:
+                # Get location from POS config
+                location = False
+                if order.session_id and order.session_id.config_id and order.session_id.config_id.picking_type_id:
+                    location = order.session_id.config_id.picking_type_id.default_location_src_id
+                
+                for line in order.lines:
+                    self._manual_stock_deduct_fallback(line.product_id, line.qty, location=location)
+                
+                # Deduct Plastics
+                plastic_configs = [
+                    ('Plastik Minuman 1 Cup', order.x_plastic_1cup),
+                    ('Plastik Minuman 2 Cup', order.x_plastic_2cup),
+                    ('Plastik Makanan', order.x_plastic_food),
+                ]
+                for p_name, p_qty in plastic_configs:
+                    if p_qty and p_qty > 0:
+                        plastic_product = self.env['product.product'].sudo().search([('name', '=', p_name)], limit=1)
+                        if plastic_product:
+                            self._manual_stock_deduct_fallback(plastic_product, p_qty, location=location)
 
             return {
                 'status': 'success',
@@ -176,29 +182,47 @@ class PosOrder(models.Model):
                 order.write({'state': 'paid'})
             
             # Final fallback for stock if everything else failed
-            for line in order.lines:
-                self._manual_stock_deduct_fallback(line.product_id, line.qty)
+            location = False
+            if order and order.session_id and order.session_id.config_id and order.session_id.config_id.picking_type_id:
+                location = order.session_id.config_id.picking_type_id.default_location_src_id
+                
+            if order:
+                for line in order.lines:
+                    self._manual_stock_deduct_fallback(line.product_id, line.qty, location=location)
+                
+                # Deduct Plastics fallback
+                plastic_configs = [
+                    ('Plastik Minuman 1 Cup', order.x_plastic_1cup),
+                    ('Plastik Minuman 2 Cup', order.x_plastic_2cup),
+                    ('Plastik Makanan', order.x_plastic_food),
+                ]
+                for p_name, p_qty in plastic_configs:
+                    if p_qty and p_qty > 0:
+                        plastic_product = self.env['product.product'].sudo().search([('name', '=', p_name)], limit=1)
+                        if plastic_product:
+                            self._manual_stock_deduct_fallback(plastic_product, p_qty, location=location)
 
             return {
                 'status': 'created_with_warning',
-                'id': order.id,
+                'id': order.id if order else False,
                 'message': str(e)
             }
 
 
-    def _manual_stock_deduct_fallback(self, product, qty):
+    def _manual_stock_deduct_fallback(self, product, qty, location=None):
         """
-        Manually deduct stock from the first internal location.
+        Manually deduct stock from the specific location.
         Handles both standard products and Kits (by deducting ingredients).
         """
         try:
+            if not location:
+                location = self.env['stock.location'].sudo().search([('usage', '=', 'internal')], limit=1)
+
             # Check if it's a Kit (Phantom BoM)
             bom = self.env['mrp.bom'].sudo().search([
                 '|', ('product_tmpl_id', '=', product.product_tmpl_id.id),
                 ('product_id', '=', product.id)
             ], limit=1)
-
-            location = self.env['stock.location'].sudo().search([('usage', '=', 'internal')], limit=1)
             
             if bom and bom.type == 'phantom':
                 for bom_line in bom.bom_line_ids:
@@ -215,7 +239,8 @@ class PosOrder(models.Model):
         if product.type != 'product':
             return
 
-        quant = self.env['stock.quant'].sudo().with_context(inventory_mode=True).search([
+        Quant = self.env['stock.quant'].with_env(self.env(user=SUPERUSER_ID))
+        quant = Quant.with_context(inventory_mode=True).search([
             ('product_id', '=', product.id),
             ('location_id', '=', location.id)
         ], limit=1)
@@ -223,12 +248,12 @@ class PosOrder(models.Model):
         if quant:
             quant.inventory_quantity = quant.quantity + change_qty
         else:
-            quant = self.env['stock.quant'].sudo().with_context(inventory_mode=True).create({
+            quant = Quant.with_context(inventory_mode=True).create({
                 'product_id': product.id,
                 'location_id': location.id,
                 'inventory_quantity': change_qty
             })
-        quant.sudo().action_apply_inventory()
+        quant.action_apply_inventory()
 
 class PosOrderLine(models.Model):
     _inherit = 'pos.order.line'

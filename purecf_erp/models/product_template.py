@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from odoo import models, fields, api
+from odoo import models, fields, api, SUPERUSER_ID
 import json
 
 class ProductTemplate(models.Model):
@@ -102,13 +102,14 @@ class ProductTemplate(models.Model):
         old_qty = self.with_context(location=location_id).qty_available
 
         # Create and apply inventory adjustment in Odoo 17 style
-        quant = self.env['stock.quant'].sudo().with_context(inventory_mode=True).search([
+        Quant = self.env['stock.quant'].with_env(self.env(user=SUPERUSER_ID))
+        quant = Quant.with_context(inventory_mode=True).search([
             ('product_id', '=', product.id),
             ('location_id', '=', location_id)
         ], limit=1)
         
         if not quant:
-            quant = self.env['stock.quant'].sudo().with_context(inventory_mode=True).create({
+            quant = Quant.with_context(inventory_mode=True).create({
                 'product_id': product.id,
                 'location_id': location_id,
                 'inventory_quantity': float(new_qty)
@@ -116,8 +117,8 @@ class ProductTemplate(models.Model):
         else:
             quant.inventory_quantity = float(new_qty)
             
-        # Use sudo() explicitly on the action call to ensure manager bypass
-        quant.sudo().action_apply_inventory()
+        # Use SUPERUSER environment explicitly on the action call to ensure manager bypass
+        quant.action_apply_inventory()
         
         # Record Audit Log
         self.env['purecf.audit.log'].sudo().create({
@@ -133,7 +134,7 @@ class ProductTemplate(models.Model):
         
         return True
 
-    def action_add_stock_incoming(self, incoming_qty, admin_id, total_price=0.0, note=None):
+    def action_add_stock_incoming(self, incoming_qty, admin_id, total_price=0.0, note=None, date=None):
         """
         Increments the current stock (Belanja/Stock Masuk).
         Also updates standard_price (cost) if price is provided.
@@ -163,13 +164,14 @@ class ProductTemplate(models.Model):
             return True
 
         # Use simple quant approach for speed in this demo/skripsi
-        quant = self.env['stock.quant'].sudo().with_context(inventory_mode=True).search([
+        Quant = self.env['stock.quant'].with_env(self.env(user=SUPERUSER_ID))
+        quant = Quant.with_context(inventory_mode=True).search([
             ('product_id', '=', product.id),
             ('location_id', '=', location.id)
         ], limit=1)
         
         if not quant:
-            quant = self.env['stock.quant'].sudo().with_context(inventory_mode=True).create({
+            quant = Quant.with_context(inventory_mode=True).create({
                 'product_id': product.id,
                 'location_id': location.id,
                 'inventory_quantity': new_total
@@ -177,10 +179,10 @@ class ProductTemplate(models.Model):
         else:
             quant.inventory_quantity = new_total
             
-        quant.sudo().action_apply_inventory()
+        quant.action_apply_inventory()
         
         # Record Audit Log
-        self.env['purecf.audit.log'].sudo().create({
+        audit_vals = {
             'res_model': 'product.template',
             'res_id': self.id,
             'admin_id': admin_id or self.env.uid,
@@ -188,18 +190,25 @@ class ProductTemplate(models.Model):
             'old_state': json.dumps({'qty_available': old_qty, 'cost': self.standard_price, 'location_id': location.id}),
             'new_state': json.dumps({'qty_available': new_total, 'cost': self.standard_price, 'location_id': location.id}),
             'note': note or 'Stock Incoming from Dashboard'
-        })
+        }
+        if date:
+            audit_vals['create_date'] = date
+            
+        audit = self.env['purecf.audit.log'].sudo().create(audit_vals)
+        if date:
+            # Override create_date as it's auto-generated
+            self.env.cr.execute("UPDATE purecf_audit_log SET create_date=%s WHERE id=%s", (date, audit.id))
 
         # AUTO-CASH RECONCILIATION: Create an expense record to deduct cash balance
         if total_price and total_price > 0:
-            self.env['purecf.expense'].sudo().create({
-                'name': f'Belanja Stok: {self.name}',
+            expense_vals = {
                 'amount': float(total_price),
-                'date': fields.Datetime.now(),
+                'date': date if date else fields.Datetime.now(),
                 'note': f'[Bahan Baku] Pembelian {incoming_qty} {self.uom_id.name} {self.name}',
                 # If we have a session, link it for reconciliation
                 'session_id': self.env['pos.session'].search([('state', '=', 'opened')], limit=1).id
-            })
+            }
+            self.env['purecf.expense'].sudo().create(expense_vals)
 
         return True
 
