@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from odoo import models, fields, api
+from odoo.exceptions import UserError
 
 class HrEmployee(models.Model):
     _inherit = 'hr.employee'
@@ -10,6 +11,20 @@ class HrEmployee(models.Model):
         'pos.config',
         string='Toko Penugasan'
     )
+
+    def action_generate_user(self):
+        for employee in self:
+            if not employee.user_id:
+                login = employee.work_email or (employee.name.replace(" ", "").lower() + "@example.com")
+                user = self.env['res.users'].create({
+                    'name': employee.name,
+                    'login': login,
+                })
+                employee.user_id = user.id
+                # Force sync after user creation
+                if employee.job_id:
+                    employee._sync_user_groups_from_job()
+
 
     def _sync_user_groups_from_job(self):
         """Sync Odoo Groups and App Role based on Job Position."""
@@ -59,6 +74,11 @@ class HrEmployee(models.Model):
         return employees
 
     def write(self, vals):
+        if 'x_employee_pin' in vals:
+            for employee in self:
+                # Allow if the user is changing their own PIN, or if running as sudo/admin
+                if employee.user_id != self.env.user and not self.env.su:
+                    raise UserError("Anda hanya dapat melihat, mengedit, atau menghapus POS PIN milik Anda sendiri.")
         res = super().write(vals)
         if 'job_id' in vals or 'user_id' in vals:
             self._sync_user_groups_from_job()

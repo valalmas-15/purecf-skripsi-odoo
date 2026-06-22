@@ -6,6 +6,10 @@
         <field name="inherit_id" ref="hr.view_employee_form"/>
         <field name="arch" type="xml">
 
+            <xpath expr="//header" position="inside">
+                <button name="action_generate_user" string="Generate User" type="object" class="btn-primary" invisible="user_id or not id" groups="purecf_erp.group_purecf_owner"/>
+            </xpath>
+
             <field name="department_id" position="attributes">
                 <attribute name="invisible">1</attribute>
             </field>
@@ -36,7 +40,8 @@
                             <field name="x_pos_config_id" options="{'no_create': True}"/>
                         </group>
                         <group string="Akses &amp; Keamanan">
-                            <field name="x_employee_pin" password="True"/>
+                            <field name="user_id" invisible="1"/>
+                            <field name="x_employee_pin" password="True" invisible="user_id != uid" readonly="user_id != uid"/>
                             <field name="x_can_approve_void"/>
                         </group>
                     </group>
